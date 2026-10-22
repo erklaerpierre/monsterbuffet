@@ -3,24 +3,26 @@ Ein hungriges Monster hat eine geheime Essensregel (Rückseite der Monsterkarte)
 
 # Material
 Alle Karten sind 63 x 88 mm. {anzahl_zutaten} Zutatenkarten (Monsterfutter: Gruppe, Farbe, Anzahl), {anzahl_monster} Monsterkarten, {geduld_gesamt} Geduldskarten (Zeitbombe, davon {geduld} im Spiel und {geduld_reserve} Reserve), {saettigung_gesamt} Sättigungskarten ({saettigung} im Spiel, {saettigung_reserve} Reserve) und {schnupperteller_gesamt} Schnupperteller-Karten ({schnupperteller} im Spiel, {schnupperteller_reserve} Reserve) und ein großer Teller zum Ausdrucken (Seite im Querformat vor dem Bildnachweis). Die Zutatenkarten liegen offen auf dem Tisch und werden nicht verbraucht.
+[material]
 
 # Schwierigkeit der Monster
-Der Rand der Monsterkarte und 1 bis 4 Gehirne zeigen, wie verzwickt die Regel ist: {stufenfarben}. Stufe 1: ein Merkmal oder eine einfache Tellergröße. Stufe 2: ODER-Regel oder Teller-Regel. Stufe 3: UND, "ABER nichts", "weder noch" oder Lage auf dem Teller. Stufe 4: drei Bedingungen, "entweder oder" oder Lage/Größe zusammen mit einem Merkmal. Merkmale sind Essensgruppe (Gemüse, Süßes, Herzhaftes, Medizin), Farbe oder Anzahl (Einzelstücke, Paare, Dreiergruppen).
+Der Rand der Monsterkarte und 1 bis 4 Gehirne zeigen, wie verzwickt die Regel ist: {stufenfarben}. Stufe 1: ein Merkmal oder eine einfache Tellergröße. Stufe 2: ODER-Regel oder Teller-Regel. Stufe 3: UND, „ABER nichts“, „weder noch“ oder Lage auf dem Teller. Stufe 4: drei Bedingungen, „entweder oder“ oder Lage/Größe zusammen mit einem Merkmal. Merkmale sind Essensgruppe (Gemüse, Süßes, Herzhaftes, Medizin), Farbe oder Anzahl (Einzelstücke, Paare, Dreiergruppen).
 
 # Kryptozoologe
 Reihum ist eine Person Kryptozoologe (Fabelwesenforscher). Sie liest die Regel auf der Monster-Rückseite, wertet jeden Teller aus und verrät nur die Reaktion des Monsters (mit dem Mampf- oder Bäh-Spruch). Alle anderen lesen die Monster-Rückseite nicht.
 
 # Aufbau
-Den Teller quer in die Tischmitte legen, so dass alle "ganz links" und "ganz rechts" gleich sehen. Ein Monster ziehen, {geduld} Geduldskarten und {schnupperteller} Schnupperteller-Karten bereitlegen, Sättigung leer.
+Den Teller quer in die Tischmitte legen, so dass alle „ganz links“ und „ganz rechts“ gleich sehen. Ein Monster ziehen, {geduld} Geduldskarten und {schnupperteller} Schnupperteller-Karten bereitlegen, Sättigung leer.
 
 # Ablauf - ein Teller
 Gemeinsam bis zu 3 Zutatenkarten nebeneinander auf den Teller legen, von links nach rechts in der Reihenfolge, in der sie gelegt werden. Der Kryptozoologe prüft jede Karte: gegessen oder ausgespuckt. Dann:
 - Alles gegessen: MAMPF. Eine Sättigungskarte vor das Monster legen.
 - Gemischt: Das Monster isst das Passende, SPUCKT das Unpassende aus (offen zur Seite legen). Keine Sättigung, aber auch keine Geduld weg. Das ist euer wichtigster Hinweis.
 - Nichts gegessen: BÄH. Eine Geduldskarte abgeben.
+[beispiel]
 
 # Teller-Regeln
-Manche Regeln betreffen die Größe oder Lage. "Ganz links" ist die zuerst gelegte Karte, "ganz rechts" die zuletzt gelegte (beides steht auch am Tellerrand) (bei einer einzigen Karte ist sie beides). Größenregeln gelten für den ganzen Teller: stimmt die Größe, wird alles gegessen, sonst nichts.
+Manche Regeln betreffen die Größe oder Lage. „Ganz links“ ist die zuerst gelegte Karte, „ganz rechts“ die zuletzt gelegte (bei einer einzigen Karte ist sie beides; beides steht auch am Tellerrand). Größenregeln gelten für den ganzen Teller: stimmt die Größe, wird alles gegessen, sonst nichts.
 
 # Schnupperteller
 Die ersten {schnupperteller} Teller pro Monster sind Schnupperteller: Für jeden legt ihr eine Schnupperteller-Karte ab. Ein Bäh kostet dabei keine Geduld.

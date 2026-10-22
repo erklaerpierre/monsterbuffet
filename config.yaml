@@ -34,6 +34,8 @@ farben:
   regeltext: "#B0302A"       # Regelzeile auf der Monster-Rückseite
   mampf: "#2E9E4F"           # grüner Haken / Mampf-Punkt
   baeh: "#D7263D"            # rotes Kreuz / Bäh-Punkt
+  anleitung: "#4B2E6B"       # Spielregeln: Kopfband, Überschriften, Rand der Regelkarten
+  kasten: "#F2EDF7"          # Spielregeln: Hintergrund von Kästen (## Abschnitte)
   # Zutatenfarben: Name -> Farbe. Namen müssen zu zutaten.csv passen.
   zutaten:
     rot:   "#D7263D"
@@ -52,6 +54,12 @@ stufen:
   2: {farbe: "#FFB300", name: "gelb-orange"}
   3: {farbe: "#E53935", name: "rot"}
   4: {farbe: "#1F2A44", name: "dunkelblau"}
+
+# Monsterkarten-Varianten im PDF (nacheinander). Ohne "positionen" = alle Monster.
+# positionen = Nummern innerhalb jeder Stufe (alphabetisch sortiert, ab 1).
+monster_varianten:
+  - {name: "Alle Monster"}
+  - {name: "Auswahl (4 je Stufe)", positionen: [1, 7, 15, 22]}
 
 gehirn:
   icon: marker/lorc/brain.svg
@@ -93,6 +101,9 @@ texte:
   teller_regel_zeile1: "Gilt für den ganzen Teller (Lage oder Größe)."
   teller_regel_zeile2: "Nur mit Kryptozoologe, nicht für Solo."
   fuss_anleitung: "Monsterbuffet - Spielregeln"
+  fuss_regelkarten_vorne: "Regelkarten Vorderseiten {seite}/{seiten} - nächste Seite auf die Rückseite drucken (lange Kante wenden)"
+  fuss_regelkarten_hinten: "Regelkarten Rückseiten {seite}/{seiten} (Spalten gespiegelt für doppelseitigen Druck)"
+  regeln_titel: "Spielregeln"
   fuss_zutaten: "Zutatenkarten {von}-{bis} von {gesamt}"
   fuss_monster_vorne: "Monster Vorderseiten {seite}/{seiten} - nächste Seite auf die Rückseite drucken (lange Kante wenden)"
   fuss_monster_hinten: "Monster Rückseiten {seite}/{seiten} (Spalten gespiegelt für doppelseitigen Druck)"

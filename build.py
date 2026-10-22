@@ -21,6 +21,9 @@ try:
     from reportlab.pdfbase.ttfonts import TTFont
     from svglib.svglib import svg2rlg
     from reportlab.graphics import renderPDF
+    from reportlab.platypus import Flowable, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import ParagraphStyle
+    from xml.sax.saxutils import escape
 except ImportError as e:
     sys.exit(f"Fehlendes Paket: {e.name}. Installieren mit: pip install -r requirements.txt")
 
@@ -346,15 +349,6 @@ def footer(c, text):
     c.drawString(8 * mm, 4.5 * mm, text)
 
 
-def wrapped(c, text, x, y, width, font=BODY_FONT, size=10, lead=13, color="#222222"):
-    c.setFont(font, size)
-    c.setFillColor(HexColor(color))
-    for line in simpleSplit(text, font, size, width):
-        c.drawString(x, y, line)
-        y -= lead
-    return y
-
-
 def fit_text(c, text, cx, y, maxw, font=TITLE_FONT, size=13):
     while stringWidth(text, font, size) > maxw and size > 6.5:
         size -= 0.5
@@ -382,11 +376,15 @@ def ingredient_card(c, z, x, y):
                         TXT["zutat_zeile"].format(gruppe=z["gruppe"], farbe=display(z["farbe"]), anzahl=z["anzahl"]))
 
 
-def level_border(c, x, y, level):
-    c.setFillColor(HexColor(STUFEN[level]["farbe"]))
+def level_frame(c, x, y, color):
+    c.setFillColor(HexColor(color))
     c.rect(x - BLEED, y - BLEED, CW + 2 * BLEED, CH + 2 * BLEED, fill=1, stroke=0)
     c.setFillColor(white)
     c.rect(x + BAND, y + BAND, CW - 2 * BAND, CH - 2 * BAND, fill=1, stroke=0)
+
+
+def level_border(c, x, y, level):
+    level_frame(c, x, y, STUFEN[level]["farbe"])
 
 
 def monster_front(c, mo, x, y):
@@ -424,6 +422,22 @@ def mini_card(c, z, cx, cy, size):
         pts, sz = [(0, 2.5 * u), (-2.7 * u, -2.1 * u), (2.7 * u, -2.1 * u)], 4.7 * u
     for dx, dy in pts:
         icon(c, z["icon"], col, cx + dx - sz / 2, cy + dy - sz / 2, sz)
+
+
+def badge(c, bx, by, ok, r=2.2 * mm):
+    """Grüner Haken oder rotes Kreuz im Kreis (r = Radius)."""
+    u = r / (2.2 * mm)
+    c.setFillColor(HexColor(OK_COL if ok else NO_COL))
+    c.setStrokeColor(white)
+    c.setLineWidth(0.7 * u)
+    c.circle(bx, by, r, fill=1, stroke=1)
+    c.setLineWidth(1.0 * u)
+    if ok:
+        c.line(bx - 1.1 * mm * u, by - 0.1 * mm * u, bx - 0.3 * mm * u, by - 0.9 * mm * u)
+        c.line(bx - 0.3 * mm * u, by - 0.9 * mm * u, bx + 1.2 * mm * u, by + 0.9 * mm * u)
+    else:
+        c.line(bx - 0.9 * mm * u, by - 0.9 * mm * u, bx + 0.9 * mm * u, by + 0.9 * mm * u)
+        c.line(bx - 0.9 * mm * u, by + 0.9 * mm * u, bx + 0.9 * mm * u, by - 0.9 * mm * u)
 
 
 def saying(c, x, y, text, color, width, size=7.8, lead=3.0 * mm):
@@ -465,19 +479,7 @@ def monster_back(c, mo, x, y):
             tcx = gx0 + col * cell_w + cell_w / 2
             tcy = gy0 - row * cell_h - cell_h / 2
             mini_card(c, z, tcx, tcy, thumb)
-            ok = k in mo["table"]
-            bx, by = tcx + thumb / 2 - 0.5 * mm, tcy + thumb / 2 - 0.5 * mm
-            c.setFillColor(HexColor(OK_COL if ok else NO_COL))
-            c.setStrokeColor(white)
-            c.setLineWidth(0.7)
-            c.circle(bx, by, 2.2 * mm, fill=1, stroke=1)
-            c.setLineWidth(1.0)
-            if ok:
-                c.line(bx - 1.1 * mm, by - 0.1 * mm, bx - 0.3 * mm, by - 0.9 * mm)
-                c.line(bx - 0.3 * mm, by - 0.9 * mm, bx + 1.2 * mm, by + 0.9 * mm)
-            else:
-                c.line(bx - 0.9 * mm, by - 0.9 * mm, bx + 0.9 * mm, by + 0.9 * mm)
-                c.line(bx - 0.9 * mm, by + 0.9 * mm, bx + 0.9 * mm, by - 0.9 * mm)
+            badge(c, tcx + thumb / 2 - 0.5 * mm, tcy + thumb / 2 - 0.5 * mm, k in mo["table"])
     sx, sw = x + BAND + 3.5 * mm, CW - 2 * BAND - 9 * mm
     yy = saying(c, sx, y + 24.2 * mm, mo["mampf"], OK_COL, sw)
     saying(c, sx, yy - 0.8 * mm, mo["baeh"], NO_COL, sw)
@@ -543,68 +545,392 @@ def fill(s):
 
 
 def parse_anleitung(p):
+    """# Abschnitt, ## Kasten, - Aufzählung, Leerzeile = neuer Absatz,
+    [material] / [beispiel] = Abbildung an dieser Stelle."""
     blocks, cur = [], None
     for line in open(p, encoding="utf-8").read().splitlines():
-        if line.startswith("#"):
-            cur = dict(head=fill(line.lstrip("# ").strip()), body=[], bullets=[])
+        s = line.strip()
+        if s.startswith("#"):
+            cur = dict(head=fill(s.lstrip("# ").strip()), box=s.startswith("##"), items=[])
             blocks.append(cur)
-        elif cur is None or not line.strip():
+        elif cur is None:
             continue
-        elif line.lstrip().startswith("- "):
-            cur["bullets"].append(fill(line.lstrip()[2:].strip()))
+        elif not s:
+            cur["items"].append(("break", ""))
+        elif s in ("[material]", "[beispiel]"):
+            cur["items"].append((s[1:-1], ""))
+        elif s.startswith("- "):
+            cur["items"].append(("li", fill(s[2:].strip())))
+        elif cur["items"] and cur["items"][-1][0] == "p":
+            cur["items"][-1] = ("p", cur["items"][-1][1] + " " + fill(s))
         else:
-            cur["body"].append(fill(line.strip()))
+            cur["items"].append(("p", fill(s)))
+    for b in blocks:
+        b["items"] = [it for it in b["items"] if it[0] != "break"]
     return blocks
+
+
+# ------------------------------------------------------------------ Anleitung: Satz
+ACC = cfg["farben"].get("anleitung", "#4B2E6B")
+BOX = cfg["farben"].get("kasten", "#F2EDF7")
+
+
+class Band(Flowable):
+    """Überschrift auf farbigem Band."""
+    keep_next = True
+
+    def __init__(self, text, size):
+        super().__init__()
+        self.text, self.size = text, size
+
+    def wrap(self, aw, ah):
+        self.w, self.bh = aw, self.size * 1.6
+        return aw, self.bh + self.size * 0.55
+
+    def draw(self):
+        c, s = self.canv, self.size
+        c.setFillColor(HexColor(ACC))
+        c.roundRect(0, 0, self.w, self.bh, s * 0.35, fill=1, stroke=0)
+        size = s
+        while stringWidth(self.text, TITLE_FONT, size) > self.w - s and size > 5:
+            size -= 0.5
+        c.setFillColor(white)
+        c.setFont(TITLE_FONT, size)
+        c.drawString(s * 0.5, s * 0.48, self.text)
+
+
+class MaterialFig(Flowable):
+    """Übersicht aller Kartensorten mit Anzahl."""
+
+    def __init__(self, label_style):
+        super().__init__()
+        self.st = label_style
+        mo = next(m for m in monsters if m["level"] == 2)
+        self.items = [("zutat", ingredients[0], f"{len(ingredients)} Zutaten"),
+                      ("monster", mo, f"{len(monsters)} Monster")]
+        self.items += [("marker", t, f"{t['im_spiel'] + t['reserve']}× {t['titel']}") for t in MARKER]
+        self.items.append(("teller", None, "1 Teller"))
+
+    def wrap(self, aw, ah):
+        self.w = aw
+        self.cw = aw / 3
+        self.isz = min(self.cw * 0.62, 18 * mm)
+        self.paras = [Paragraph(lbl, self.st) for _, _, lbl in self.items]
+        self.lh = max(p.wrap(self.cw - 1 * mm, ah)[1] for p in self.paras)
+        self.rh = self.isz + self.lh + self.isz * 0.25
+        self.rows = -(-len(self.items) // 3)
+        return aw, self.rows * self.rh
+
+    def draw(self):
+        c, s = self.canv, self.isz
+        for k, (kind, obj, _) in enumerate(self.items):
+            col, row = k % 3, k // 3
+            cx = col * self.cw + self.cw / 2
+            top = (self.rows - row) * self.rh
+            cy = top - s / 2
+            if kind == "zutat":
+                mini_card(c, obj, cx, cy, s * 0.95)
+            elif kind == "monster":
+                w_, h_ = s * 0.72, s
+                c.setFillColor(HexColor(STUFEN[obj["level"]]["farbe"]))
+                c.roundRect(cx - w_ / 2, cy - h_ / 2, w_, h_, s * 0.06, fill=1, stroke=0)
+                c.setFillColor(white)
+                b = s * 0.06
+                c.rect(cx - w_ / 2 + b, cy - h_ / 2 + b, w_ - 2 * b, h_ - 2 * b, fill=1, stroke=0)
+                icon(c, obj["icon"], obj["color"], cx - s * 0.28, cy - s * 0.2, s * 0.56)
+            elif kind == "marker":
+                icon(c, obj["icon"], obj["farbe"], cx - s * 0.42, cy - s * 0.42, s * 0.84)
+            else:
+                c.setFillColor(HexColor(cfg["teller"]["rand"]))
+                c.setStrokeColor(HexColor(cfg["teller"]["linie"]))
+                c.setLineWidth(0.6)
+                c.ellipse(cx - s * 0.62, cy - s * 0.42, cx + s * 0.62, cy + s * 0.42, fill=1, stroke=1)
+                c.setFillColor(HexColor(cfg["teller"]["mulde"]))
+                c.ellipse(cx - s * 0.46, cy - s * 0.29, cx + s * 0.46, cy + s * 0.29, fill=1, stroke=1)
+            p = self.paras[k]
+            pw, ph = p.wrap(self.cw - 1 * mm, self.lh)
+            p.drawOn(c, col * self.cw + 0.5 * mm, top - s - s * 0.12 - ph)
+
+
+def example_setup():
+    """Erstes Stufe-1-Monster ohne Teller-Regel, Teller: nein - ja - nein."""
+    for mo in monsters:
+        if mo["level"] == 1 and not mo["plate"]:
+            yes = [k for k in range(len(ingredients)) if k in mo["table"]]
+            no = [k for k in range(len(ingredients)) if k not in mo["table"]]
+            if yes and len(no) >= 2:
+                return mo, [no[0], yes[0], no[1]]
+    return None, []
+
+
+EX_MON, EX_PLATE = example_setup()
+
+
+class PlateFig(Flowable):
+    """Beispielteller mit drei Zutaten und den Reaktionen des Monsters."""
+
+    def wrap(self, aw, ah):
+        self.w = aw
+        return aw, aw * 0.36
+
+    def draw(self):
+        c, w, h = self.canv, self.w, self.w * 0.36
+        T = cfg["teller"]
+        c.setStrokeColor(HexColor(T["linie"]))
+        c.setLineWidth(0.6)
+        c.setFillColor(HexColor(T["rand"]))
+        c.ellipse(0, 0, w, h, fill=1, stroke=1)
+        c.setFillColor(HexColor(T["mulde"]))
+        c.ellipse(w * 0.07, h * 0.1, w * 0.93, h * 0.9, fill=1, stroke=1)
+        s = w * 0.2
+        for n, k in enumerate(EX_PLATE):
+            cx = w * (0.27 + 0.23 * n)
+            mini_card(c, ingredients[k], cx, h / 2, s)
+            badge(c, cx + s / 2 - 0.5 * mm, h / 2 + s / 2 - 0.5 * mm, k in EX_MON["table"], r=s * 0.14)
+
+
+class Keep:
+    """Abschnitt, der möglichst nicht auf zwei Rahmen verteilt wird."""
+
+    def __init__(self, items):
+        self.items = items
+
+    def wrap(self, aw, ah):
+        return aw, sum(g.wrap(aw, ah)[1] for g in self.items)
+
+
+def rule_story(width, sc, keep=False):
+    """Flowables für die Anleitung; sc = Skalierung (1 = Heft, kleiner = Karten),
+    keep = Abschnitte zusammenhalten."""
+    body = ParagraphStyle("b", fontName=BODY_FONT, fontSize=10 * sc, leading=13 * sc,
+                          textColor=HexColor(INK))
+    intro = ParagraphStyle("i", parent=body, fontName=QUOTE_FONT, fontSize=11 * sc, leading=14.2 * sc)
+    bullet = ParagraphStyle("li", parent=body, leftIndent=4.5 * mm * sc, bulletIndent=1 * mm * sc,
+                            bulletFontName=BODY_FONT, bulletFontSize=10 * sc, bulletColor=HexColor(ACC))
+    small = ParagraphStyle("s", parent=body, fontSize=8.5 * sc, leading=10.5 * sc, alignment=1)
+    cap = ParagraphStyle("c", parent=body, fontName=QUOTE_FONT, fontSize=9 * sc, leading=11.5 * sc,
+                         alignment=1, textColor=HexColor("#555555"))
+    boxhead = ParagraphStyle("bh", parent=body, fontName=TITLE_FONT, fontSize=12 * sc, leading=15 * sc,
+                             textColor=HexColor(ACC))
+
+    def para(text, st, li=False):
+        text = escape(text)
+        m = re.match(r"^([^:.]{2,30}):", text)
+        if m:
+            text = f'<font color="{ACC}">{m.group(1)}:</font>' + text[m.end():]
+        return Paragraph(text, st, bulletText="•" if li else None)
+
+    def figure(kind):
+        if kind == "material":
+            return [MaterialFig(small), Spacer(1, 2 * mm * sc)]
+        if not EX_MON:
+            return []
+        n = [ingredients[k]["name"] for k in EX_PLATE]
+        text = (f"Beispiel: {EX_MON['name']} ({EX_MON['regeltext'] or EX_MON['regel']}). "
+                f"{n[1]} wird gegessen, {n[0]} und {n[2]} spuckt es aus: gemischt.")
+        fig = [Spacer(1, 1 * mm * sc), PlateFig(), Spacer(1, 1.2 * mm * sc), Paragraph(escape(text), cap)]
+        return ([Keep(fig)] if keep else fig) + [Spacer(1, 2 * mm * sc)]
+
+    out = []
+    for bi, b in enumerate(parse_anleitung(path(cfg["dateien"]["anleitung"]))):
+        flow_ = []
+        for kind, text in b["items"]:
+            if kind in ("material", "beispiel"):
+                flow_ += figure(kind)
+            else:
+                st = intro if bi == 0 and kind == "p" else (bullet if kind == "li" else body)
+                flow_ += [para(text, st, kind == "li"), Spacer(1, 1.6 * mm * sc)]
+        if b["box"]:
+            inner = [Paragraph(escape(b["head"]), boxhead), Spacer(1, 1 * mm * sc)] + flow_[:-1]
+            t = Table([[inner]], colWidths=[width])
+            t.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), HexColor(BOX)),
+                                   ("LINEBEFORE", (0, 0), (0, -1), 2.5 * sc, HexColor(ACC)),
+                                   ("LEFTPADDING", (0, 0), (-1, -1), 4 * mm * sc),
+                                   ("RIGHTPADDING", (0, 0), (-1, -1), 3 * mm * sc),
+                                   ("TOPPADDING", (0, 0), (-1, -1), 2.5 * mm * sc),
+                                   ("BOTTOMPADDING", (0, 0), (-1, -1), 2 * mm * sc)]))
+            sec = [t, Spacer(1, 3 * mm * sc)]
+        else:
+            sec = [Band(b["head"], 12 * sc)] + flow_ + [Spacer(1, 1.8 * mm * sc)]
+        out += [Keep(sec)] if keep else sec
+    return out
+
+
+def flow(story, sizes):
+    """Verteilt Flowables auf Rahmen. sizes liefert (w, h) je Rahmen.
+    Ergebnis: je Rahmen eine Liste (flowable, y ab Rahmenunterkante); gezeichnet wird später."""
+    story, frames = list(story), []
+    while story:
+        w, h = next(sizes)
+        avail, placed = h, []
+        frames.append(placed)
+        while story:
+            f = story[0]
+            if isinstance(f, Spacer) and not placed:
+                story.pop(0)
+                continue
+            if isinstance(f, Keep):
+                need = sum(g.wrap(w, h)[1] for g in f.items if not isinstance(g, Spacer) or g is not f.items[-1])
+                if placed and need > avail and (need <= h or avail < 0.45 * h):
+                    break
+                story[0:1] = f.items
+                continue
+            fh = f.wrap(w, avail)[1]
+            if fh <= avail + 0.01:
+                if getattr(f, "keep_next", False) and len(story) > 1 and placed:
+                    g = story[1]
+                    rest = avail - fh
+                    if g.wrap(w, rest)[1] > rest and not g.split(w, rest):
+                        break
+                story.pop(0)
+                avail -= fh
+                placed.append((f, avail))
+                continue
+            parts = f.split(w, avail)
+            if parts and parts[0].wrap(w, avail)[1] <= avail + 0.01:
+                story[0:1] = parts
+                continue
+            if not placed:
+                print("Hinweis: Element zu groß für den Rahmen, wird abgeschnitten.")
+                story.pop(0)
+                placed.append((f, avail - fh))
+                continue
+            break
+    return frames
+
+
+def draw_frame(c, placed, x, y):
+    for f, fy in placed:
+        f.drawOn(c, x, y + fy)
 
 
 # ------------------------------------------------------------------ PDF
 cv = canvas.Canvas(OUT, pagesize=A4)
 cv.setTitle(cfg["spiel"]["titel"])
-M_ = 18 * mm
-S, L = 10.5, 13
-state = {"y": 0}
+
+# Spielregeln als Heft: Kopfband, zwei Spalten
+RM, RG = 15 * mm, 8 * mm
+RCW = (W - 2 * RM - RG) / 2
+R_BOTTOM, R_TOP1, R_TOP = 16 * mm, H - 12 * mm - 46 * mm - 7 * mm, H - 22 * mm
 
 
-def new_rules_page(first=False):
-    if not first:
-        footer(cv, TXT["fuss_anleitung"])
+def cover_icons(n):
+    """n Monster gleichmäßig über die Liste verteilt."""
+    return [monsters[int(k * len(monsters) / n + len(monsters) / (2 * n))] for k in range(n)]
+
+
+def book_page(c, page):
+    if page == 1:
+        bh, btop = 46 * mm, H - 12 * mm
+        c.setFillColor(HexColor(ACC))
+        c.roundRect(RM, btop - bh, W - 2 * RM, bh, 4 * mm, fill=1, stroke=0)
+        isz, ig = 21 * mm, 3 * mm
+        x0 = W - RM - 7 * mm - 3 * isz - 2 * ig
+        for k, mo in enumerate(cover_icons(3)):
+            icon(c, mo["icon"], "#FFFFFF", x0 + k * (isz + ig), btop - bh / 2 - isz / 2, isz)
+        tmax = x0 - RM - 14 * mm
+        size = 44
+        while stringWidth(cfg["spiel"]["titel"], TITLE_FONT, size) > tmax:
+            size -= 1
+        c.setFillColor(white)
+        c.setFont(TITLE_FONT, size)
+        c.drawString(RM + 8 * mm, btop - 24 * mm, cfg["spiel"]["titel"])
+        size = 12
+        while stringWidth(cfg["spiel"]["untertitel"], BODY_FONT, size) > tmax and size > 7:
+            size -= 0.5
+        c.setFont(BODY_FONT, size)
+        c.drawString(RM + 8 * mm, btop - 33 * mm, cfg["spiel"]["untertitel"])
+    else:
+        c.setFont(TITLE_FONT, 11)
+        c.setFillColor(HexColor(ACC))
+        c.drawString(RM, H - 14 * mm, cfg["spiel"]["titel"])
+        c.setFont(BODY_FONT, 9)
+        c.drawRightString(W - RM, H - 14 * mm, TXT["regeln_titel"])
+        c.setStrokeColor(HexColor(ACC))
+        c.setLineWidth(0.6)
+        c.line(RM, H - 16 * mm, W - RM, H - 16 * mm)
+    c.setFont(BODY_FONT, 9)
+    c.setFillColor(HexColor("#777777"))
+    c.drawCentredString(W / 2, 9 * mm, f"– {page} –")
+
+
+def book_sizes():
+    k = 0
+    while True:
+        yield RCW, (R_TOP1 if k < 2 else R_TOP) - R_BOTTOM
+        k += 1
+
+
+book = flow(rule_story(RCW, 1.0), book_sizes())
+for p in range(0, len(book), 2):
+    book_page(cv, p // 2 + 1)
+    for col, placed in enumerate(book[p:p + 2]):
+        draw_frame(cv, placed, RM + col * (RCW + RG), R_BOTTOM)
+    footer(cv, TXT["fuss_anleitung"])
+    cv.showPage()
+
+# Spielregeln als Karten (63 x 88 mm): Karte 1 = Deckblatt, danach Vorder-/Rückseite im Wechsel
+CPAD = 2.6 * mm
+NUM_H = 3.2 * mm
+CFW = CW - 2 * BAND - 2 * CPAD
+CFH = CH - 2 * BAND - 2 * CPAD - NUM_H
+
+
+def rule_card(c, x, y, placed, num, total):
+    level_frame(c, x, y, ACC)
+    draw_frame(c, placed, x + BAND + CPAD, y + BAND + CPAD + NUM_H)
+    c.setFont(BODY_FONT, 7)
+    c.setFillColor(HexColor(ACC))
+    c.drawRightString(x + CW - BAND - CPAD, y + BAND + 2 * mm, f"{num}/{total}")
+
+
+def cover_card(c, x, y):
+    c.setFillColor(HexColor(ACC))
+    c.rect(x - BLEED, y - BLEED, CW + 2 * BLEED, CH + 2 * BLEED, fill=1, stroke=0)
+    c.setStrokeColor(HexColor(mix_white(ACC, 0.45)))
+    c.setLineWidth(0.6)
+    c.roundRect(x + 3 * mm, y + 3 * mm, CW - 6 * mm, CH - 6 * mm, 2.5 * mm, fill=0, stroke=1)
+    cx = x + CW / 2
+    center, *sides = cover_icons(3)
+    icon(c, center["icon"], "#FFFFFF", cx - 13 * mm, y + 50 * mm, 26 * mm)
+    for k, mo in enumerate(sides):
+        icon(c, mo["icon"], mix_white(ACC, 0.55), x + (8 if k == 0 else CW / mm - 23) * mm, y + 46 * mm, 15 * mm)
+    c.setFillColor(white)
+    fit_text(c, cfg["spiel"]["titel"], cx, y + 35 * mm, CW - 10 * mm, size=24)
+    c.setFont(BODY_FONT, 8.5)
+    yy = y + 27 * mm
+    for ln in simpleSplit(cfg["spiel"]["untertitel"], BODY_FONT, 8.5, CW - 14 * mm):
+        c.drawCentredString(cx, yy, ln)
+        yy -= 3.8 * mm
+    brains(c, 4, cx, y + 8 * mm, size=5 * mm, gap=1.2 * mm)
+
+
+def card_sizes():
+    while True:
+        yield CFW, CFH
+
+
+CSC = 0.72
+rcards = [None] + flow(rule_story(CFW, CSC, keep=True), card_sizes())
+n_rule = len(rcards) - 1
+sheets = [rcards[i:i + 2 * PER_PAGE] for i in range(0, len(rcards), 2 * PER_PAGE)]
+for si, sheet in enumerate(sheets):
+    base = si * 2 * PER_PAGE
+    for side in (0, 1):
+        for j in range(side, len(sheet), 2):
+            i = j // 2
+            if side:
+                col, row = i % COLS, i // COLS
+                i = row * COLS + (COLS - 1 - col)
+            x, y = grid_pos(i)
+            if base + j == 0:
+                cover_card(cv, x, y)
+            else:
+                rule_card(cv, x, y, sheet[j], base + j, n_rule)
+        crop_marks(cv)
+        key = "fuss_regelkarten_hinten" if side else "fuss_regelkarten_vorne"
+        footer(cv, TXT[key].format(seite=si + 1, seiten=len(sheets)))
         cv.showPage()
-    state["y"] = H - 18 * mm
-    if first:
-        cv.setFont(TITLE_FONT, 26)
-        cv.setFillColor(HexColor(INK))
-        cv.drawString(M_, state["y"], cfg["spiel"]["titel"])
-        state["y"] -= 6.5 * mm
-        cv.setFont(BODY_FONT, 11)
-        cv.setFillColor(HexColor("#555555"))
-        cv.drawString(M_, state["y"], cfg["spiel"]["untertitel"])
-        state["y"] -= 9 * mm
-
-
-def block(head, body, bullets):
-    n = len(simpleSplit(body, BODY_FONT, S, W - 2 * M_)) + sum(
-        len(simpleSplit(b, BODY_FONT, S, W - 2 * M_ - 8 * mm)) for b in bullets)
-    if state["y"] - (n + 2) * L - 8 * mm < 20 * mm:
-        new_rules_page()
-    cv.setFont(TITLE_FONT, 12.5)
-    cv.setFillColor(HexColor(RULE_COL))
-    cv.drawString(M_, state["y"], head)
-    state["y"] -= 5 * mm
-    if body:
-        state["y"] = wrapped(cv, body, M_, state["y"], W - 2 * M_, size=S, lead=L) - 1.5 * mm
-    for b in bullets:
-        cv.setFont("Helvetica-Bold", S)
-        cv.setFillColor(HexColor(INK))
-        cv.drawString(M_ + 3 * mm, state["y"], "•")
-        state["y"] = wrapped(cv, b, M_ + 8 * mm, state["y"], W - 2 * M_ - 8 * mm, size=S, lead=L) - 1.0 * mm
-    state["y"] -= 1.8 * mm
-
-
-new_rules_page(first=True)
-for b in parse_anleitung(path(cfg["dateien"]["anleitung"])):
-    block(b["head"], " ".join(b["body"]), b["bullets"])
-footer(cv, TXT["fuss_anleitung"])
-cv.showPage()
 
 # Zutaten
 for p in range(0, len(ingredients), PER_PAGE):
@@ -617,21 +943,39 @@ for p in range(0, len(ingredients), PER_PAGE):
     cv.showPage()
 
 # Monster: Vorder- und Rückseiten im Wechsel (Rückseiten gespiegelt für Duplex, lange Kante)
-pages = [monsters[i:i + PER_PAGE] for i in range(0, len(monsters), PER_PAGE)]
-for pi, chunk in enumerate(pages):
-    for i, mo in enumerate(chunk):
-        x, yb = grid_pos(i)
-        monster_front(cv, mo, x, yb)
-    crop_marks(cv)
-    footer(cv, TXT["fuss_monster_vorne"].format(seite=pi + 1, seiten=len(pages)))
-    cv.showPage()
-    for i, mo in enumerate(chunk):
-        col, row = i % COLS, i // COLS
-        x, yb = grid_pos(row * COLS + (COLS - 1 - col))
-        monster_back(cv, mo, x, yb)
-    crop_marks(cv)
-    footer(cv, TXT["fuss_monster_hinten"].format(seite=pi + 1, seiten=len(pages)))
-    cv.showPage()
+def variant_monsters(v):
+    if not v.get("positionen"):
+        return monsters
+    out = []
+    for lv in sorted(STUFEN):
+        group = [m for m in monsters if m["level"] == lv]
+        for p in v["positionen"]:
+            if 1 <= p <= len(group):
+                out.append(group[p - 1])
+            else:
+                print(f"Hinweis: {v['name']}: Stufe {lv} hat kein Monster Nr. {p}.")
+    return out
+
+
+for v in cfg.get("monster_varianten") or [{"name": ""}]:
+    sel = variant_monsters(v)
+    prefix = v["name"] + ": " if v["name"] else ""
+    pages = [sel[i:i + PER_PAGE] for i in range(0, len(sel), PER_PAGE)]
+    for pi, chunk in enumerate(pages):
+        for i, mo in enumerate(chunk):
+            x, yb = grid_pos(i)
+            monster_front(cv, mo, x, yb)
+        crop_marks(cv)
+        footer(cv, prefix + TXT["fuss_monster_vorne"].format(seite=pi + 1, seiten=len(pages)))
+        cv.showPage()
+        for i, mo in enumerate(chunk):
+            col, row = i % COLS, i // COLS
+            x, yb = grid_pos(row * COLS + (COLS - 1 - col))
+            monster_back(cv, mo, x, yb)
+        crop_marks(cv)
+        footer(cv, prefix + TXT["fuss_monster_hinten"].format(seite=pi + 1, seiten=len(pages)))
+        cv.showPage()
+    print(f"{prefix}{len(sel)} Monster, {2 * len(pages)} Seiten")
 
 # Marker
 tokens = [t for t in MARKER for _ in range(t["im_spiel"] + t["reserve"])]

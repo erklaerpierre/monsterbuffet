@@ -1,0 +1,7 @@
+# Erzeugt von build.py (das PDF gibt es im Release "latest")
+output/
+.cache/
+
+# Python
+__pycache__/
+*.pyc

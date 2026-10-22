@@ -1,0 +1,91 @@
+# ============================================================
+#  Monsterbuffet - Konfiguration
+#  Aufruf:  python3 build.py            (PDF erzeugen)
+#           python3 build.py --pruefen  (Regeln & Daten prüfen)
+#  Pfade sind relativ zu diesem Ordner (oder absolut).
+# ============================================================
+
+spiel:
+  titel: "Monsterbuffet"
+  untertitel: "Kooperatives Rätselspiel, 2-8 Personen, ca. 10-30 Minuten"
+
+dateien:
+  zutaten: zutaten.csv       # Zutatenkarten (Name, Gruppe, Farbe, Anzahl, Icon)
+  monster: monster.csv       # Monsterkarten (hier Monster ergänzen!)
+  anleitung: anleitung.txt   # Text der Spielregeln
+  icon_ordner: icons         # Wurzelordner für ALLE Icons (SVG). Kann ein anderer Ordner sein.
+  ausgabe: output/Monsterbuffet.pdf
+  cache_ordner: .cache       # eingefärbte Icons (darf gelöscht werden)
+
+layout:
+  seitenrand_mm: 6           # mindestens so viel Platz am Blattrand (für Schnittmarken)
+  abstand_mm: 4              # Abstand zwischen den Karten
+  anschnitt_mm: 1.5          # Monsterrand ragt so weit über die Schnittkante
+  randbreite_mm: 3.5         # Breite des farbigen Monsterrands
+  schnittmarken: true        # false = keine Schnittmarken
+  # Kartengröße ist fest 63 x 88 mm (Standard-Pokerformat)
+
+farben:
+  text: "#222222"
+  regeltext: "#B0302A"       # Regelzeile auf der Monster-Rückseite
+  mampf: "#2E9E4F"           # grüner Haken / Mampf-Punkt
+  baeh: "#D7263D"            # rotes Kreuz / Bäh-Punkt
+  # Zutatenfarben: Name -> Farbe. Namen müssen zu zutaten.csv passen.
+  zutaten:
+    rot:   "#D7263D"
+    blau:  "#1B6CA8"
+    gelb:  "#F2B705"
+    gruen: "#2E9E4F"
+  # Beschriftung auf den Karten (falls abweichend vom Namen):
+  anzeigenamen:
+    gruen: "grün"
+  # Monsterfarben, die der Reihe nach vergeben werden, wenn monster.csv keine Farbe angibt:
+  monsterfarben: ["#8E3B7D", "#12858A", "#5B3A8C", "#8A5A2B", "#4A5568", "#D6478F", "#E8710A"]
+
+# Schwierigkeitsstufen: Randfarbe, Name, Anzahl Gehirne = Stufennummer
+stufen:
+  1: {farbe: "#43A047", name: "grün"}
+  2: {farbe: "#FFB300", name: "gelb-orange"}
+  3: {farbe: "#E53935", name: "rot"}
+  4: {farbe: "#1F2A44", name: "dunkelblau"}
+
+gehirn:
+  icon: marker/lorc/brain.svg
+  farbe: "#C2185B"
+
+# Markerkarten (je eine Karte pro Stück, im_spiel + reserve = Anzahl der gedruckten Karten)
+# "schluessel" ist der Platzhalter in anleitung.txt, z. B. {geduld}, {geduld_reserve}
+marker:
+  - {schluessel: geduld,         titel: "Geduld",          untertitel: "Ein Bäh = eine Karte weg",
+     icon: marker/lorc/time-bomb.svg,         farbe: "#D7263D", im_spiel: 5, reserve: 4}
+  - {schluessel: saettigung,     titel: "Sättigung",       untertitel: "Ein sauberer Teller = eine Karte",
+     icon: marker/delapouite/eating.svg,      farbe: "#2E9E4F", im_spiel: 3, reserve: 3}
+  - {schluessel: schnupperteller, titel: "Schnupperteller", untertitel: "Dieser Teller kostet keine Geduld",
+     icon: marker/delapouite/meal.svg,        farbe: "#1B6CA8", im_spiel: 2, reserve: 1}
+
+# Namen der Icon-Urheber für den Bildnachweis: Ordnername -> Anzeigename.
+# (Der Urheber ergibt sich aus dem Ordner, in dem das Icon liegt: icons/monster/<urheber>/<icon>.svg)
+urheber:
+  lorc: "Lorc"
+  delapouite: "Delapouite"
+  cathelineau: "Cathelineau"
+  skoll: "Skoll"
+  caro-asercion: "Caro Asercion"
+  faithtoken: "Faithtoken"
+
+# Beschriftungen auf den Karten und in den Fußzeilen
+texte:
+  zutat_zeile: "{gruppe} · {farbe} · {anzahl}x"
+  teller_regel_icon: marker/delapouite/meal.svg
+  teller_regel_titel: "Teller-Regel"
+  teller_regel_zeile1: "Gilt für den ganzen Teller (Lage oder Größe)."
+  teller_regel_zeile2: "Nur mit Kryptozoologe, nicht für Solo."
+  fuss_anleitung: "Monsterbuffet - Spielregeln"
+  fuss_zutaten: "Zutatenkarten {von}-{bis} von {gesamt}"
+  fuss_monster_vorne: "Monster Vorderseiten {seite}/{seiten} - nächste Seite auf die Rückseite drucken (lange Kante wenden)"
+  fuss_monster_hinten: "Monster Rückseiten {seite}/{seiten} (Spalten gespiegelt für doppelseitigen Druck)"
+  fuss_marker: "Markerkarten {seite}"
+  nachweis_titel: "Bildnachweis (game-icons.net, CC BY 3.0)"
+  nachweis_hinweis:
+    - "Alle Icons wurden nur umgefärbt. Icons made by <Urheber>."
+    - "Lizenz: https://creativecommons.org/licenses/by/3.0/"

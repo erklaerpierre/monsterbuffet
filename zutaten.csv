@@ -1,0 +1,17 @@
+﻿name;gruppe;farbe;anzahl;icon
+Peperoni;Gemüse;rot;2;essen/delapouite/chili-pepper.svg
+Pilz;Gemüse;blau;1;essen/lorc/mushroom.svg
+Kürbis;Gemüse;gelb;3;essen/lorc/pumpkin-lantern.svg
+Knoblauch;Gemüse;gruen;1;essen/delapouite/garlic.svg
+Keks;Süßes;gruen;3;essen/delapouite/cookie.svg
+Kuchenstück;Süßes;gelb;1;essen/lorc/cake-slice.svg
+Lebkuchenmann;Süßes;rot;3;essen/delapouite/gingerbread-man.svg
+Wackelpudding;Süßes;blau;2;essen/delapouite/jelly.svg
+Pizzastück;Herzhaftes;rot;3;essen/delapouite/pizza-slice.svg
+Dosenfisch;Herzhaftes;blau;2;essen/delapouite/canned-fish.svg
+Döner;Herzhaftes;gelb;2;essen/delapouite/doner-kebab.svg
+Muschel;Herzhaftes;gruen;1;essen/delapouite/mussel.svg
+Pille;Medizin;gruen;2;essen/lorc/pill.svg
+Zaubertrank;Medizin;rot;2;essen/lorc/honeypot.svg
+Gift;Medizin;blau;3;essen/lorc/poison-bottle.svg
+Kräuter;Medizin;gelb;1;essen/delapouite/herbs-bundle.svg

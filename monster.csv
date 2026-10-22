@@ -1,0 +1,89 @@
+﻿name;stufe;regel;regeltext;spruch;mampf;baeh;icon;farbe
+Drache Dragomir;1;nicht Herzhaftes;mag nichts Herzhaftes;Wirtshäuser sind nichts für mich.;Ein Funke im Bauch, gut so!;Das löscht meine Flamme.;monster/lorc/dragon-head.svg;#5B3A8C
+Dämon Daniel;1;nicht Medizin;mag keine Medizin;Krank bin ich nie. Fast nie.;Teuflisch fein.;Dafür bin ich nicht aus der Hölle gekommen.;monster/delapouite/oni.svg;#E8710A
+Falkengott Falko;1;nicht 2;mag keine Paare;Pärchen machen mich nervös.;Ein Opfer nach meinem Geschmack.;Mein Auge sieht: nicht würdig.;monster/delapouite/horus.svg;#8E3B7D
+Feuerdrache Funkel;1;Gemüse;mag Gemüse;Im Frühling blühe ich richtig auf.;Es knistert vor Freude!;Das ist mir zu kalt.;monster/faithtoken/dragon-head.svg;#5B3A8C
+Franky Flickwerk;1;nicht blau;mag nichts Blaues;Blau macht mich traurig.;Es lebt! Und es schmeckt!;Das passt nirgends dran.;monster/lorc/frankenstein-creature.svg;#E8710A
+Goblino Gier;1;Süßes;mag Süßes;Das Leben ist zu kurz für Bitteres.;Mehr! Mehr! Mehr!;Nix da, nix schmatz.;monster/caro-asercion/goblin.svg;#4A5568
+Golem Grobian;1;blau;mag Blaues;Das Meer ruft mich, ganz leise.;Stein gut. Essen auch gut.;Essen hart? Nein. Essen bäh.;monster/delapouite/golem-head.svg;#8A5A2B
+Graf Ghoul;1;2;mag Paare;Zwei Augen, zwei Ohren, und ich nutze beides.;Ausgezeichneter Jahrgang.;Ein schwacher Jahrgang.;monster/delapouite/vampire-dracula.svg;#5B3A8C
+Hollow Hark;1;Medizin;mag Medizin;Vorsicht ist besser als Nachsicht.;Echo im Magen, gut.;Hohl. Wie mein Bauch.;monster/delapouite/troglodyte.svg;#8A5A2B
+Kicher-Kobold Kichi;1;nicht gruen;mag nichts Grünes;Blätter sind nichts für mich.;Hihihi, mehr davon!;Haha, nein. Hihi.;monster/lorc/imp-laugh.svg;#E8710A
+Lila Tentakel Lotti;1;nicht rot;mag nichts Rotes;Bei roten Ampeln werde ich nervös.;Schlürf! Wie ein Gedicht.;Das ist nicht lila genug.;monster/delapouite/purple-tentacle.svg;#D6478F
+Medusa Mähne;1;gruen;mag Grünes;Ich habe neulich im Wald gewohnt. Hübsch dort.;Ich bin begeistert, fast versteinert.;Das ist zum Versteinern. Bäh.;monster/cathelineau/medusa-head.svg;#D6478F
+Minotaurus Muh;1;nicht gelb;mag nichts Gelbes;Zitronen sind mir zu sauer.;Muuuh-hervorragend!;Muuuh-bäh.;monster/lorc/minotaur.svg;#E8710A
+Oger Olli;1;1;mag Einzelstücke;Manchmal reicht eins völlig.;Ogerlecker!;Pfui! Ich bin doch keine Zwiebel.;monster/delapouite/ogre.svg;#8A5A2B
+Sabber-Dämon Sepp;1;nicht 1;mag keine Einzelstücke;Allein essen ist traurig.;Schlabber, schlabber, super!;Das macht nicht mal Sabber.;monster/lorc/gooey-daemon.svg;#E8710A
+Schemen Sibylle;1;rot;mag Rotes;Bei Ampeln halte ich immer sofort an.;Ich sehe: Es ist gut.;Ich sehe: Es ist nichts.;monster/lorc/spectre.svg;#4A5568
+Spukgestalt Spuki;1;Herzhaftes;mag Herzhaftes;Ich bin eher der Salzstreuer als der Zuckerstreuer.;Huu, das ist gut!;Huu, da gruselt es mich.;monster/lorc/haunting.svg;#4A5568
+Stielauge Stan;1;groesse:3;mag nur Teller mit drei Karten;Ein bisschen mehr darf es schon sein.;Ich hab es im Auge, lecker!;Da schau ich lieber weg.;monster/lorc/eyestalk.svg;#5B3A8C
+Truhenbiest Trudi;1;nicht 3;mag keine Dreiergruppen;Dreimal ist mir einmal zu viel.;Klapp, klapp, genau das!;Klapp. Zu. Das will ich nicht.;monster/delapouite/mimic-chest.svg;#4A5568
+Wichtel Wicht;1;3;mag Dreiergruppen;Dreimal darfst du raten.;Das mag ich, das mag ich!;Das mag ich nicht, nein nein.;monster/lorc/imp.svg;#E8710A
+Wikingerdrache Wyrm;1;groesse:1;mag nur Teller mit genau einer Karte;Weniger ist manchmal mehr.;Skål! Das ist Beute!;Nicht mal einen Plünderzug wert.;monster/delapouite/drakkar-dragon.svg;#D6478F
+Wunschgeist Wazir;1;gelb;mag Gelbes;Die Sonne macht mich ganz hungrig.;Wunsch erfüllt, Wunsch geschmeckt.;Dein Wunsch ist abgelehnt.;monster/delapouite/djinn.svg;#8E3B7D
+Augenspinne Alfred;2;3 oder rot;mag Dreiergruppen ODER Rotes;Ich werde schnell rot, wenn ich Hunger habe.;Acht Augen drauf, gut!;Acht Augen sagen: nein.;monster/delapouite/spider-eye.svg;#12858A
+Echsenmann Egon;2;Herzhaftes oder 1;mag Herzhaftes ODER Einzelstücke;Ich bin ein Einzelgänger. Schon immer.;Ssssuper!;Ssssscheußlich!;monster/lorc/lizardman.svg;#4A5568
+Eisklotz Eddi;2;gelb oder Süßes;mag Gelbes ODER Süßes;Das Leben ist zu kurz für Bitteres.;Cool! Das schmeckt!;Das lässt mich eiskalt.;monster/delapouite/ice-golem.svg;#12858A
+Elfe Elfriede;2;Süßes oder gruen;mag Süßes ODER Grünes;Ich beneide jeden Frosch.;Köstlich wie Morgentau.;Zu grob für feine Zungen.;monster/lorc/fairy.svg;#E8710A
+Felsbrocken Fritz;2;Gemüse oder 3;mag Gemüse ODER Dreiergruppen;Ich bin ein Naturbursche, wirklich.;Solide!;Zu weich, zu nett.;monster/delapouite/rock-golem.svg;#8A5A2B
+Fiese Fledermaus Fiona;2;Gemüse oder Süßes;mag Gemüse ODER Süßes;Zuckersüß, sagt meine Mutter über mich.;Piep! Das schmeckt nach Nacht.;Zu hell, zu laut, zu bäh.;monster/lorc/evil-bat.svg;#8A5A2B
+Flora Fresslust;2;1 oder Süßes;mag Einzelstücke ODER Süßes;Mein Zahnarzt kennt mich beim Vornamen.;Nom nom, Nachschlag bitte!;Ich bin nicht dein Kompost!;monster/delapouite/carnivorous-plant.svg;#D6478F
+Flossi Fischkopf;2;Medizin oder Gemüse;mag Medizin ODER Gemüse;Ein Feld ist für mich ein Ort der Sehnsucht.;Blubb! Das ist ein Festmahl!;Blubb... nein. Wirklich nein.;monster/delapouite/fish-monster.svg;#12858A
+Giftgrinser Gunnar;2;Gemüse oder gelb;mag Gemüse ODER Gelbes;Ich bin ein Naturbursche, wirklich.;Grins-grins, perfekt!;Grins weg. Nein.;monster/lorc/vile-fluid.svg;#12858A
+Glibber Glasi;2;2 oder Gemüse;mag Paare ODER Gemüse;Zu zweit ist alles schöner.;Glibber-glasklar gut!;Das sehe ich durch: nein.;monster/cathelineau/transparent-slime.svg;#D6478F
+Gobbo Grimm;2;2 oder gelb;mag Paare ODER Gelbes;Ich bin heute ein richtiger Sonnenschein.;Mein Schatz! Mein Essen!;Pfui! Das ist nicht golden.;monster/delapouite/goblin-head.svg;#8A5A2B
+Gurgel Gargo;2;gruen oder blau;mag Grünes ODER Blaues;Ich träume oft vom Himmel.;Gurgel-gut!;Das gehört aufs Dach, nicht in den Mund.;monster/delapouite/gargoyle.svg;#E8710A
+Hörnchen-Echse Horst;2;links;mag nur die Karte ganz links;Ich esse immer von links, da bin ich pingelig.;Sonne im Maul, sehr gut.;Zu kalt für meine Schuppen.;monster/delapouite/horned-reptile.svg;#12858A
+Kugel Knall;2;gelb oder 3;mag Gelbes ODER Dreiergruppen;Aller guten Dinge sind drei.;Volltreffer, mitten ins Herz!;Daneben! Schon wieder daneben!;monster/delapouite/bullet-bill.svg;#8A5A2B
+Käferling Karl;2;blau oder Medizin;mag Blaues ODER Medizin;Ein Löffelchen am Tag hält Ärger fern.;Knusper, knusper, herrlich!;Das knirscht nicht mal richtig.;monster/delapouite/alien-bug.svg;#4A5568
+Rex Rumpel;2;groesse:2;mag nur Teller mit genau zwei Karten;Zu zweit macht alles mehr Spaß.;Grrr-oßartig!;Zu klein für einen Zahn.;monster/lorc/dinosaur-rex.svg;#12858A
+Rüpel-Rudi;2;rechts;mag nur die Karte ganz rechts;Rechtsherum ist mein Lieblingsweg.;Na geht doch, Chef!;Pah! Mir doch egal, ey.;monster/delapouite/bully-minion.svg;#8A5A2B
+Schädel-Dämon Samael;2;gruen oder 1;mag Grünes ODER Einzelstücke;Lieber eins, aber richtig.;Köstlich, wie ein verlorenes Seelchen.;Fad. Nicht mal einen Fluch wert.;monster/lorc/daemon-skull.svg;#E8710A
+Seedrache Sirko;2;Medizin oder 2;mag Medizin ODER Paare;Vorsicht ist besser als Nachsicht.;Ein Festmahl für Matrosen!;Das Meer spuckt es wieder aus.;monster/lorc/sea-dragon.svg;#12858A
+Sphinx Sophokles;2;Süßes oder rot;mag Süßes ODER Rotes;Mein Lieblingsmonat ist der Rosenmonat.;Weise gewählt.;Töricht gewählt.;monster/delapouite/greek-sphinx.svg;#8E3B7D
+Wolfsmensch Wulf;2;Herzhaftes oder Süßes;mag Herzhaftes ODER Süßes;Ein ordentlicher Hunger braucht ordentlich Würze.;Awooo! Gut!;Grrr. Nein.;monster/lorc/werewolf.svg;#5B3A8C
+Zweikopf-Drache Zilanth;2;Süßes oder 2;mag Süßes ODER Paare;Das Leben ist zu kurz für Bitteres.;Beide Köpfe sagen: Mjam!;Der linke mag es nicht, der rechte auch nicht.;monster/lorc/double-dragon.svg;#4A5568
+Anubis Albert;3;Medizin und nicht 3;mag Medizin, ABER keine Dreiergruppen;Mein Arzt sagt, ich soll mehr auf mich achten.;Das wiegt schwer wie ein Herz. Gut.;Zu leicht. Die Waage kippt nicht.;monster/delapouite/anubis.svg;#8E3B7D
+Besenhexe Berta;3;2 und blau;mag Paare UND Blaues;Heute fühle ich mich ein bisschen blau.;Fliegend gut!;Das bringt mich nicht in die Luft.;monster/lorc/witch-flight.svg;#5B3A8C
+Fiesling Faustus;3;nicht Herzhaftes und nicht gelb;mag weder Herzhaftes noch Gelbes;Salz? Nur im Notfall.;Ein Handel, den ich liebe!;Dafür verkaufe ich keine Seele.;monster/lorc/diablo-skull.svg;#4A5568
+Gespenst Gisela;3;nicht gelb und nicht Süßes;mag weder Gelbes noch Süßes;Zu viel Sonne bekommt mir nicht.;Buh-hervorragend!;Uäh. Das geht durch mich durch.;monster/lorc/ghost.svg;#4A5568
+Harpyie Harriet;3;blau und nicht 1;mag Blaues, ABER keine Einzelstücke;Heute fühle ich mich ein bisschen blau.;Kreisch! Köstlich!;Kreisch! Widerlich!;monster/lorc/harpy.svg;#8E3B7D
+Karkassus Knorrbert;3;nicht rot und nicht Medizin;mag weder Rotes noch Medizin;Stoppschilder machen mir Angst.;Wurzeln und Zweige sagen: gut.;Das ist mir zu morsch.;monster/lorc/evil-tree.svg;#8A5A2B
+Krötenzahn Kurt;3;(gelb) und rechts;mag Gelbes, aber nur ganz rechts;Ich lese eigentlich von rechts, aus Gewohnheit.;Quak! Mampf!;Quak. Das kommt wieder raus.;monster/lorc/toad-teeth.svg;#5B3A8C
+Maskenteufel Mephi;3;gelb und nicht Medizin;mag Gelbes, ABER keine Medizin;Ich mag es, wenn alles leuchtet.;Teuflisch gut!;Das ist unter meiner Maske.;monster/delapouite/devil-mask.svg;#E8710A
+Minion Mäkel;3;Süßes und 3;mag Süßes UND Dreiergruppen;Zuckersüß, sagt meine Mutter über mich.;Mjam, Boss, mjam!;Mäh. Der Meister mag das nicht.;monster/lorc/evil-minion.svg;#E8710A
+Moorhaufen Moritz;3;nicht gruen und nicht 2;mag weder Grünes noch Paare;Frösche machen mich nervös.;Blubb-lecker, wie Torf.;Pfui, viel zu trocken.;monster/delapouite/shambling-mound.svg;#8A5A2B
+Mumie Mumpitz;3;(Süßes) und links;mag Süßes, aber nur ganz links;Das Beste kommt bei mir immer zuerst.;Gut abgehangen, gut so.;Zu frisch! Ich mag es alt.;monster/delapouite/mummy-head.svg;#8A5A2B
+Nixe Nele;3;rot und 2;mag Rotes UND Paare;Doppelt hält besser.;Wie ein Perlentauchgang!;Das schmeckt nach Trockenzeit.;monster/delapouite/mermaid.svg;#12858A
+Ork Orkan;3;Medizin und 2;mag Medizin UND Paare;Mein Arzt sagt, ich soll mehr auf mich achten.;Ork gut! Ork satt!;Ork nix mögen!;monster/delapouite/orc-head.svg;#8A5A2B
+Rätselsphinx Ramses;3;Süßes und nicht 3;mag Süßes, ABER keine Dreiergruppen;Mein Zahnarzt kennt mich beim Vornamen.;Richtig geraten, mein Freund.;Falsche Antwort, falsches Futter.;monster/delapouite/egyptian-sphinx.svg;#5B3A8C
+Schleimi Schlonz;3;(blau) und links;mag Blaues, aber nur ganz links;Mein Blick fällt immer zuerst nach links.;Schlonz-tastisch!;Schlonz-eklig.;monster/delapouite/slime.svg;#D6478F
+Schwebequalle Seraphina;3;gruen und 1;mag Grünes UND Einzelstücke;Ich beneide jeden Frosch.;Wabbelig-wunderbar!;Zu fest für meine Fäden.;monster/delapouite/metroid.svg;#D6478F
+Sensenmann Sven;3;2 und nicht gruen;mag Paare, ABER nichts Grünes;Doppelt hält besser.;Das ist mein Ernte-Dank.;Noch nicht dran. Bäh.;monster/lorc/grim-reaper.svg;#4A5568
+Tentakel Thalasso;3;nicht gruen und nicht Herzhaftes;mag weder Grünes noch Herzhaftes;Gras ist auch nicht alles.;Ein Schmaus aus der Tiefe!;Das schmeckt nach Trockenland.;monster/delapouite/brain-tentacle.svg;#D6478F
+Tritonkopf Trito;3;1 und nicht Herzhaftes;mag Einzelstücke, ABER nichts Herzhaftes;Ich bin ein Einzelgänger. Schon immer.;Meeresrauschen im Magen!;Das ist mir zu trocken, Süßer.;monster/lorc/triton-head.svg;#12858A
+Trolli Trumm;3;(Gemüse) und rechts;mag Gemüse, aber nur ganz rechts;Das Beste hebe ich mir bis zum Schluss auf.;Brückenzoll akzeptiert!;Kein Zoll. Kein Essen.;monster/skoll/troll.svg;#8A5A2B
+Wummsi Wutklotz;3;Medizin und nicht 2;mag Medizin, ABER keine Paare;Mein Arzt sagt, ich soll mehr auf mich achten.;WUMMS! Zufrieden!;WUMMS! Zurück damit!;monster/delapouite/thwomp.svg;#E8710A
+Zombie Zotte;3;nicht Gemüse und nicht Süßes;mag weder Gemüse noch Süßes;Von Blättern wird mir ganz anders.;Hirn... äh, gut!;Nein... nicht... Hirn.;monster/delapouite/shambling-zombie.svg;#8A5A2B
+Baumgesicht Borkus;4;(Süßes oder 3) und nicht gruen;mag Süßes ODER Dreiergruppen, ABER nichts Grünes;Frösche machen mich nervös.;Wurzelgut!;Das ist nicht mein Holz.;monster/cathelineau/tree-face.svg;#8A5A2B
+Bigfoot Bernd;4;(Süßes) und groesse:3;mag Süßes, aber nur auf Tellern mit drei Karten;Je mehr Auswahl, desto süßer der Tag.;Rrr! Gut und groß!;Nein. Keine Fußspuren davon.;monster/delapouite/sasquatch.svg;#8A5A2B
+Brutus Bollo;4;(rot oder blau) und rechts;mag Rotes ODER Blaues, aber nur ganz rechts;Ganz am Ende wird es meistens bunt.;RAAAH! Her damit!;BAH! Mehr Wumms bitte!;monster/delapouite/brute.svg;#8A5A2B
+Dösi Dracul;4;(Medizin oder Süßes) und nicht gruen;mag Medizin ODER Süßes, ABER nichts Grünes;Gras ist auch nicht alles.;Gähn... schmeckt gut.;Weck mich, wenn es besser wird.;monster/delapouite/resting-vampire.svg;#8A5A2B
+Einhorn Einhard;4;Süßes und (rot oder blau);mag Süßes, aber nur Rotes ODER Blaues;Mein Zahnarzt kennt mich beim Vornamen.;Regenbogenhaft!;Das ist nicht magisch genug.;monster/delapouite/unicorn.svg;#D6478F
+Fee Funkelchen;4;(gelb oder Gemüse) und nicht gruen;mag Gelbes ODER Gemüse, ABER nichts Grünes;Die Sonne macht mich ganz hungrig.;Glitzer! Wie wundervoll!;Igitt, nicht mal ein bisschen Glitzer.;monster/delapouite/fairy.svg;#12858A
+Feuergeist Flint;4;(3) und links;mag Dreiergruppen, aber nur ganz links;Ich zähle gern, und zwar von links.;Heiß und fettig, perfekt!;Ausgebrannt. Danke, nein.;monster/lorc/ifrit.svg;#E8710A
+Funkengeist Fiffi;4;(3 oder gelb) und nicht Medizin;mag Dreiergruppen ODER Gelbes, ABER keine Medizin;Aller guten Dinge sind drei.;Zisch! Das zündet!;Pffft. Nicht zündend.;monster/lorc/spark-spirit.svg;#E8710A
+Gaffer Glotz;4;(3 oder Süßes) und nicht (3 und Süßes);mag Dreiergruppen ODER Süßes, aber nicht beides;Ich liebe Dreiklänge, ehrlich.;Ich sehe es, und ich mag es!;Ich will das gar nicht ansehen!;monster/lorc/behold.svg;#8E3B7D
+Gnom Grummel;4;Herzhaftes und (gruen oder blau);mag Herzhaftes, aber nur Grünes ODER Blaues;Ich mag's deftig, wie im Wirtshaus.;Hm. Passt in meinen Garten.;Das kommt mir nicht in den Garten!;monster/cathelineau/bad-gnome.svg;#5B3A8C
+Greif Gregor;4;(3 oder gelb) und nicht (3 und gelb);mag Dreiergruppen ODER Gelbes, aber nicht beides;Dreimal darfst du raten.;Königlich!;Unwürdig für einen Greif.;monster/delapouite/griffin-symbol.svg;#D6478F
+Hexe Hedwig;4;(Medizin) und groesse:2;mag Medizin, aber nur auf Tellern mit genau zwei Karten;Zwei Löffel am Tag, nie mehr.;Wie aus dem Kessel!;Das gehört in den Kessel zurück.;monster/cathelineau/witch-face.svg;#5B3A8C
+Nessie Nuschel;4;(3 oder 2) und nicht Medizin;mag Dreiergruppen ODER Paare, ABER keine Medizin;Ich liebe Dreiklänge, ehrlich.;Plitsch! Plätscher-gut!;Plitsch. Platsch. Nein.;monster/skoll/sea-creature.svg;#12858A
+Rabenkopf Raven;4;2 und (Gemüse oder Süßes);mag Paare, aber nur Gemüse ODER Süßes;Zu zweit ist alles schöner.;Krah! Glänzend!;Krah. Nicht glänzend genug.;monster/delapouite/kenku-head.svg;#8E3B7D
+Schlinger Schlund;4;(2 oder gruen) und nicht (2 und gruen);mag Paare ODER Grünes, aber nicht beides;Zwei Augen, zwei Ohren, und ich nutze beides.;Gluck! Weg damit.;Würg! Das bleibt nicht drin.;monster/delapouite/swallower.svg;#4A5568
+Schwebegeist Schorsch;4;gruen und (1 oder Süßes);mag Grünes, aber nur Einzelstücke ODER Süßes;Auf einer Wiese bin ich immer gut gelaunt.;Uuuuh, lecker!;Uuuuh, ekelhaft!;monster/delapouite/floating-ghost.svg;#4A5568
+Stachel-Drache Skorpius;4;Medizin und (2 oder blau);mag Medizin, aber nur Paare ODER Blaues;Ein Löffelchen am Tag hält Ärger fern.;Mit Stachel und Schuppen: ja!;Das sticht mir nicht.;monster/delapouite/spiked-dragon-head.svg;#12858A
+Sumpf-Fledermaus Sumpfi;4;Gemüse und (blau oder rot);mag Gemüse, aber nur Blaues ODER Rotes;Im Frühling blühe ich richtig auf.;Sumpfig-gut!;Zu trocken, zu sauber.;monster/delapouite/swamp-bat.svg;#8A5A2B
+Tentakelchen Tilda;4;(Süßes oder 3) und nicht rot;mag Süßes ODER Dreiergruppen, ABER nichts Rotes;Rosen? Die stechen ja nur.;Alle acht Arme klatschen!;Alle acht Arme winken ab.;monster/delapouite/floating-tentacles.svg;#D6478F
+Wyvern Wibke;4;(2 oder Gemüse) und nicht 3;mag Paare ODER Gemüse, ABER keine Dreiergruppen;Mit Mengen habe ich's nicht so.;Zack! Gefangen und gut.;Zu langsam, zu fad.;monster/lorc/wyvern.svg;#12858A
+Zentaur Zottel;4;(1 oder Gemüse) und nicht (1 und Gemüse);mag Einzelstücke ODER Gemüse, aber nicht beides;Manchmal reicht eins völlig.;Galopp im Gaumen, herrlich!;Das lahmt gewaltig.;monster/delapouite/centaur.svg;#5B3A8C
+Zyklop Zahnweh;4;2 und (Süßes oder gruen);mag Paare, aber nur Süßes ODER Grünes;Zu zweit ist alles schöner.;Auuu... aber lecker!;Au! Das tut weh.;monster/delapouite/jawless-cyclop.svg;#D6478F

@@ -1,0 +1,35 @@
+# Worum geht es?
+Ein hungriges Monster hat eine geheime Essensregel (Rückseite der Monsterkarte). Ihr serviert ihm Zutatenkarten und schließt aus seinen Reaktionen auf die Regel. Ihr spielt gemeinsam gegen das Monster: satt bekommen, bevor ihm die Geduld ausgeht.
+
+# Material
+Alle Karten sind 63 x 88 mm. {anzahl_zutaten} Zutatenkarten (Monsterfutter: Gruppe, Farbe, Anzahl), {anzahl_monster} Monsterkarten, {geduld_gesamt} Geduldskarten (Zeitbombe, davon {geduld} im Spiel und {geduld_reserve} Reserve), {saettigung_gesamt} Sättigungskarten ({saettigung} im Spiel, {saettigung_reserve} Reserve) und {schnupperteller_gesamt} Schnupperteller-Karten ({schnupperteller} im Spiel, {schnupperteller_reserve} Reserve). Die Zutatenkarten liegen offen auf dem Tisch und werden nicht verbraucht.
+
+# Schwierigkeit der Monster
+Der Rand der Monsterkarte und 1 bis 4 Gehirne zeigen, wie verzwickt die Regel ist: {stufenfarben}. Stufe 1: ein Merkmal oder eine einfache Tellergröße. Stufe 2: ODER-Regel oder Teller-Regel. Stufe 3: UND, "ABER nichts", "weder noch" oder Lage auf dem Teller. Stufe 4: drei Bedingungen, "entweder oder" oder Lage/Größe zusammen mit einem Merkmal. Merkmale sind Essensgruppe (Gemüse, Süßes, Herzhaftes, Medizin), Farbe oder Anzahl (Einzelstücke, Paare, Dreiergruppen).
+
+# Kryptozoologe
+Reihum ist eine Person Kryptozoologe (Fabelwesenforscher). Sie liest die Regel auf der Monster-Rückseite, wertet jeden Teller aus und verrät nur die Reaktion des Monsters (mit dem Mampf- oder Bäh-Spruch). Alle anderen lesen die Monster-Rückseite nicht.
+
+# Aufbau
+Ein Monster ziehen, {geduld} Geduldskarten und {schnupperteller} Schnupperteller-Karten bereitlegen, Sättigung leer.
+
+# Ablauf - ein Teller
+Gemeinsam bis zu 3 Zutatenkarten nebeneinander auf einen Teller legen (Reihenfolge, wie sie gelegt werden). Der Kryptozoologe prüft jede Karte: gegessen oder ausgespuckt. Dann:
+- Alles gegessen: MAMPF. Eine Sättigungskarte vor das Monster legen.
+- Gemischt: Das Monster isst das Passende, SPUCKT das Unpassende aus (offen zur Seite legen). Keine Sättigung, aber auch keine Geduld weg. Das ist euer wichtigster Hinweis.
+- Nichts gegessen: BÄH. Eine Geduldskarte abgeben.
+
+# Teller-Regeln
+Manche Regeln betreffen die Größe oder Lage. "Ganz links" ist die zuerst gelegte Karte, "ganz rechts" die zuletzt gelegte (bei einer einzigen Karte ist sie beides). Größenregeln gelten für den ganzen Teller: stimmt die Größe, wird alles gegessen, sonst nichts.
+
+# Schnupperteller
+Die ersten {schnupperteller} Teller pro Monster sind Schnupperteller: Für jeden legt ihr eine Schnupperteller-Karte ab. Ein Bäh kostet dabei keine Geduld.
+
+# Die Regel nennen
+Jederzeit darf die Gruppe die Regel laut nennen. Stimmt sie, ist das Monster sofort satt. Stimmt sie nicht: eine Geduldskarte abgeben, weiterspielen.
+
+# Gewonnen / Verloren
+Gewonnen: {saettigung} Sättigungskarten (Teller ohne Ausgespucktes) oder Regel richtig genannt. Verloren: alle {geduld} Geduldskarten sind weg. Eine Partie = 3 Monster nacheinander, am besten mit steigender Gehirnzahl.
+
+# Lizenz und Bildnachweis
+Alle Icons (Monster, Essen, Gift, Zeitbombe, Gehirn) stammen von game-icons.net und stehen unter der Lizenz Creative Commons Namensnennung 3.0 (CC BY 3.0, https://creativecommons.org/licenses/by/3.0/). Sie wurden nur umgefärbt. Icons made by {urheber} (https://game-icons.net). Einzelnachweis pro Icon: letzte Seite.

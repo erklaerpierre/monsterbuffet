@@ -568,7 +568,7 @@ MARKER = cfg["marker"]
 for t in MARKER:
     if not os.path.exists(os.path.join(ICON_DIR, t["icon"])):
         fail(f"Marker {t['titel']}: Icon nicht gefunden.")
-used = [m["icon"] for m in monsters] + [z["icon"] for z in ingredients] + [t["icon"] for t in MARKER] + [BR["icon"], cfg["teller"]["icon"]]
+used = [m["icon"] for m in monsters] + [z["icon"] for z in ingredients] + [t["icon"] for t in MARKER] + [BR["icon"], cfg["teller"]["icon"]] + [b["icon"] for b in cfg["rueckseiten"].values()]
 authors = sorted({author_of(u) for u in used})
 
 
@@ -1035,6 +1035,39 @@ for si, sheet in enumerate(sheets):
         footer(cv, TXT[key].format(seite=si + 1, seiten=len(sheets)))
         cv.showPage()
 
+def mirrored_pos(i):
+    """Position auf der Rückseite (Spalten gespiegelt, Duplex lange Kante)."""
+    col, row = i % COLS, i // COLS
+    return grid_pos(row * COLS + (COLS - 1 - col))
+
+
+def card_back(c, x, y, kind):
+    """Gemeinsame, dezente Rückseite für Zutaten- und Markerkarten."""
+    b = cfg["rueckseiten"][kind]
+    c.setFillColor(HexColor(mix_white(ACC, 0.9)))
+    c.rect(x - BLEED, y - BLEED, CW + 2 * BLEED, CH + 2 * BLEED, fill=1, stroke=0)
+    c.setStrokeColor(HexColor(mix_white(ACC, 0.62)))
+    c.setLineWidth(0.6)
+    c.roundRect(x + 3 * mm, y + 3 * mm, CW - 6 * mm, CH - 6 * mm, 2.5 * mm, fill=0, stroke=1)
+    cx = x + CW / 2
+    size = 30 * mm
+    icon(c, b["icon"], mix_white(ACC, 0.55), cx - size / 2, y + 40 * mm, size)
+    c.setFillColor(HexColor(mix_white(ACC, 0.25)))
+    fit_text(c, b["titel"], cx, y + 28 * mm, CW - 12 * mm, size=22)
+    c.setFillColor(HexColor(mix_white(ACC, 0.45)))
+    c.setFont(BODY_FONT, 8)
+    c.drawCentredString(cx, y + 9 * mm, cfg["spiel"]["titel"])
+
+
+def backs_page(c, n, kind, text):
+    for i in range(n):
+        x, yb = mirrored_pos(i)
+        card_back(c, x, yb, kind)
+    crop_marks(c)
+    footer(c, text)
+    c.showPage()
+
+
 # Zutaten
 for p in range(0, len(ingredients), PER_PAGE):
     chunk = ingredients[p:p + PER_PAGE]
@@ -1044,6 +1077,7 @@ for p in range(0, len(ingredients), PER_PAGE):
     crop_marks(cv)
     footer(cv, TXT["fuss_zutaten"].format(von=p + 1, bis=p + len(chunk), gesamt=len(ingredients)))
     cv.showPage()
+    backs_page(cv, len(chunk), "zutat", TXT["fuss_zutaten_hinten"].format(von=p + 1, bis=p + len(chunk)))
 
 # Monster: Vorder- und Rückseiten im Wechsel (Rückseiten gespiegelt für Duplex, lange Kante)
 for v in VARIANTS:
@@ -1076,6 +1110,7 @@ for p in range(0, len(tokens), PER_PAGE):
     crop_marks(cv)
     footer(cv, TXT["fuss_marker"].format(seite=p // PER_PAGE + 1))
     cv.showPage()
+    backs_page(cv, len(chunk), "marker", TXT["fuss_marker_hinten"].format(seite=p // PER_PAGE + 1))
 
 # Teller (quer): Innenfläche groß genug für 3 Karten nebeneinander
 TL = cfg["teller"]
@@ -1116,6 +1151,7 @@ rows = [(m["name"], m["icon"]) for m in sorted(monsters, key=lambda m: m["name"]
 rows += [("Zutat " + z["name"], z["icon"]) for z in ingredients]
 rows += [("Karte " + t["titel"], t["icon"]) for t in MARKER]
 rows += [("Schwierigkeit", BR["icon"]), ("Teller", TL["icon"])]
+rows += [("Rückseite " + b["titel"], b["icon"]) for b in cfg["rueckseiten"].values()]
 per_col = 56
 for i, (nm, rel) in enumerate(rows):
     col, row = i // per_col, i % per_col

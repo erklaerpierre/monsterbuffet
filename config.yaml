@@ -74,6 +74,11 @@ gehirn:
   icon: marker/lorc/brain.svg
   farbe: "#C2185B"
 
+# Gemeinsame Rückseiten (dezent in der Anleitungsfarbe)
+rueckseiten:
+  zutat:  {titel: "Zutat",  icon: marker/delapouite/meal.svg}
+  marker: {titel: "Marker", icon: marker/lorc/cauldron.svg}
+
 # Spielteller (eigene Seite im Querformat, dezente Farben)
 teller:
   icon: marker/delapouite/meal.svg
@@ -113,10 +118,12 @@ texte:
   fuss_regelkarten_vorne: "Regelkarten Vorderseiten {seite}/{seiten} - nächste Seite auf die Rückseite drucken (lange Kante wenden)"
   fuss_regelkarten_hinten: "Regelkarten Rückseiten {seite}/{seiten} (Spalten gespiegelt für doppelseitigen Druck)"
   regeln_titel: "Spielregeln"
-  fuss_zutaten: "Zutatenkarten {von}-{bis} von {gesamt}"
+  fuss_zutaten: "Zutatenkarten {von}-{bis} von {gesamt} - nächste Seite auf die Rückseite drucken (lange Kante wenden)"
+  fuss_zutaten_hinten: "Zutatenkarten Rückseiten {von}-{bis} (für einseitigen Druck überspringen)"
   fuss_monster_vorne: "Monster Vorderseiten {seite}/{seiten} - nächste Seite auf die Rückseite drucken (lange Kante wenden)"
   fuss_monster_hinten: "Monster Rückseiten {seite}/{seiten} (Spalten gespiegelt für doppelseitigen Druck)"
-  fuss_marker: "Markerkarten {seite}"
+  fuss_marker: "Markerkarten {seite} - nächste Seite auf die Rückseite drucken (lange Kante wenden)"
+  fuss_marker_hinten: "Markerkarten Rückseiten {seite} (für einseitigen Druck überspringen)"
   fuss_teller: "Teller - hier die Zutatenkarten ablegen (Seite quer, ganz links = zuerst gelegt)"
   teller_links: "ganz links · zuerst gelegt"
   teller_rechts: "ganz rechts · zuletzt gelegt"

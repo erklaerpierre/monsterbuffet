@@ -3,6 +3,8 @@ Ein hungriges Monster hat eine geheime Essensregel (Rückseite der Monsterkarte)
 
 # Material
 Alle Karten sind 63 x 88 mm. {anzahl_zutaten} Zutatenkarten (Monsterfutter: Gruppe, Farbe, Anzahl), {anzahl_monster} Monsterkarten, {geduld_gesamt} Geduldskarten (Zeitbombe, davon {geduld} im Spiel und {geduld_reserve} Reserve), {saettigung_gesamt} Sättigungskarten ({saettigung} im Spiel, {saettigung_reserve} Reserve) und {schnupperteller_gesamt} Schnupperteller-Karten ({schnupperteller} im Spiel, {schnupperteller_reserve} Reserve) und ein großer Teller zum Ausdrucken (Seite im Querformat vor dem Bildnachweis). Die Zutatenkarten liegen offen auf dem Tisch und werden nicht verbraucht.
+
+Die Monsterkarten gibt es in zwei Fassungen zum Ausdrucken: alle {anzahl_monster} Monster oder eine kleinere Auswahl mit {anzahl_auswahl} Monstern ({auswahl_je_stufe} je Schwierigkeitsstufe).
 [material]
 
 # Schwierigkeit der Monster
@@ -40,9 +42,12 @@ Verloren: Alle {geduld} Geduldskarten sind weg. Eine Partie = 3 Monster nacheina
 
 - Regel muss immer richtig genannt werden.
 - Zeitlimit von 3 Minuten für jedes Monster.
-- Es gibt nur einen oder null Schnupperteller.
+- Es gibt keinen oder nur einen Schnupperteller.
+- Es gibt keinen Schnupperteller, aber eine Geduldskarte mehr.
 
 # Lizenz und Bildnachweis
+
+[autor] Spielidee und Gestaltung: {autor}, {autor_web}. Das Spiel steht unter der Lizenz {lizenz} ({lizenz_url}): Weitergeben und Bearbeiten ist erlaubt, mit Namensnennung, nicht kommerziell und unter gleicher Lizenz.
 
 Alle Icons (Monster, Essen, Gift, Zeitbombe, Gehirn) stammen von game-icons.net und stehen unter der Lizenz Creative Commons Namensnennung 3.0 (CC BY 3.0, https://creativecommons.org/licenses/by/3.0/). Sie wurden nur umgefärbt. Icons made by {urheber} (https://game-icons.net). Einzelnachweis pro Icon: letzte Seite.
 

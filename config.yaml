@@ -9,6 +9,15 @@ spiel:
   titel: "Monsterbuffet"
   untertitel: "Kooperatives Rätselspiel, 2-8 Personen, ca. 10-30 Minuten"
 
+# Urheber des Spiels: Fußzeile jeder Druckseite, Deckblatt der Regelkarten,
+# Platzhalter {autor}, {autor_web}, {lizenz}, {lizenz_url} in anleitung.txt
+autor:
+  name: "Pierre Smits"
+  web: "https://pierresmits.de"
+  logo: ci/pierre_logo.png          # relativ zum Icon-Ordner (PNG mit Transparenz)
+  lizenz: "CC BY-NC-SA 4.0"
+  lizenz_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de"
+
 dateien:
   zutaten: zutaten.csv       # Zutatenkarten (Name, Gruppe, Farbe, Anzahl, Icon)
   monster: monster.csv       # Monsterkarten (hier Monster ergänzen!)
@@ -59,7 +68,7 @@ stufen:
 # positionen = Nummern innerhalb jeder Stufe (alphabetisch sortiert, ab 1).
 monster_varianten:
   - {name: "Alle Monster"}
-  - {name: "Auswahl (4 je Stufe)", positionen: [1, 7, 15, 22]}
+  - {name: "Auswahl (4 je Stufe)", positionen: [3, 7, 15, 22]}
 
 gehirn:
   icon: marker/lorc/brain.svg
@@ -98,8 +107,8 @@ texte:
   zutat_zeile: "{gruppe} · {farbe} · {anzahl}x"
   teller_regel_icon: marker/delapouite/meal.svg
   teller_regel_titel: "Teller-Regel"
-  teller_regel_zeile1: "Gilt für den ganzen Teller (Lage oder Größe)."
-  teller_regel_zeile2: "Nur mit Kryptozoologe, nicht für Solo."
+  teller_regel_zeile1: "Gilt für alle Zutatenkarten, die auf dem"
+  teller_regel_zeile2: "Teller liegen. (Lage, Farbe oder Größe)"
   fuss_anleitung: "Monsterbuffet - Spielregeln"
   fuss_regelkarten_vorne: "Regelkarten Vorderseiten {seite}/{seiten} - nächste Seite auf die Rückseite drucken (lange Kante wenden)"
   fuss_regelkarten_hinten: "Regelkarten Rückseiten {seite}/{seiten} (Spalten gespiegelt für doppelseitigen Druck)"

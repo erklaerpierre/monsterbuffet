@@ -24,6 +24,8 @@ try:
     from reportlab.platypus import Flowable, Paragraph, Spacer, Table, TableStyle
     from reportlab.lib.styles import ParagraphStyle
     from xml.sax.saxutils import escape
+    from reportlab.lib.utils import ImageReader
+    from PIL import Image
 except ImportError as e:
     sys.exit(f"Fehlendes Paket: {e.name}. Installieren mit: pip install -r requirements.txt")
 
@@ -343,10 +345,43 @@ def crop_marks(c):
     c.restoreState()
 
 
+AUTOR = cfg.get("autor") or {}
+WEB_SHORT = re.sub(r"^https?://(www\.)?", "", AUTOR.get("web", "")).rstrip("/")
+CREDIT = " · ".join(s for s in (AUTOR.get("name"), WEB_SHORT) if s)
+_LOGOS = {}
+
+
+def logo(white=False):
+    """Logo als ImageReader; white = einfarbig weiße Fassung (aus der Transparenz)."""
+    if not AUTOR.get("logo"):
+        return None
+    if white not in _LOGOS:
+        src = os.path.join(ICON_DIR, AUTOR["logo"])
+        if not os.path.exists(src):
+            fail(f"Logo nicht gefunden: {src}")
+        im = Image.open(src).convert("RGBA")
+        if white:
+            im = Image.merge("RGBA", (*[Image.new("L", im.size, 255)] * 3, im.getchannel("A")))
+        _LOGOS[white] = ImageReader(im)
+    return _LOGOS[white]
+
+
+def draw_logo(c, x, y, h, white=False):
+    """Zeichnet das Logo mit Höhe h, gibt die Breite zurück."""
+    img = logo(white)
+    if img is None:
+        return 0
+    iw, ih = img.getSize()
+    c.drawImage(img, x, y, h * iw / ih, h, mask="auto")
+    return h * iw / ih
+
+
 def footer(c, text):
     c.setFont("Helvetica", 7)
     c.setFillColor(HexColor("#999999"))
     c.drawString(8 * mm, 4.5 * mm, text)
+    if CREDIT:
+        c.drawRightString(c._pagesize[0] - 8 * mm, 4.5 * mm, "© " + CREDIT)
 
 
 def fit_text(c, text, cx, y, maxw, font=TITLE_FONT, size=13):
@@ -454,32 +489,41 @@ def saying(c, x, y, text, color, width, size=7.8, lead=3.0 * mm):
 def monster_back(c, mo, x, y):
     level_border(c, x, y, mo["level"])
     cx = x + CW / 2
+    # Name mit kleinem Monster-Icon davor, zusammen zentriert
+    isz, gap = 6 * mm, 1.3 * mm
+    maxw = CW - 2 * BAND - 4 * mm - isz - gap
+    size = 13
+    while stringWidth(mo["name"], TITLE_FONT, size) > maxw and size > 6.5:
+        size -= 0.5
+    x0 = cx - (isz + gap + stringWidth(mo["name"], TITLE_FONT, size)) / 2
+    icon(c, mo["icon"], mo["color"], x0, y + 76.4 * mm, isz)
     c.setFillColor(HexColor(INK))
-    fit_text(c, mo["name"], cx, y + 77.5 * mm, CW - 2 * BAND - 4 * mm, size=13)
-    brains(c, mo["level"], cx, y + 69.6 * mm, size=4.8 * mm, gap=1 * mm)
+    c.setFont(TITLE_FONT, size)
+    c.drawString(x0 + isz + gap, y + 77.5 * mm, mo["name"])
     if mo["plate"]:
-        icon(c, TXT["teller_regel_icon"], "#777777", cx - 8.5 * mm, y + 44 * mm, 17 * mm)
-        c.setFont(TITLE_FONT, 9.5)
+        icon(c, TXT["teller_regel_icon"], "#777777", cx - 9.5 * mm, y + 47 * mm, 19 * mm)
+        c.setFont(TITLE_FONT, 10)
         c.setFillColor(HexColor("#444444"))
-        c.drawCentredString(cx, y + 38 * mm, TXT["teller_regel_titel"])
+        c.drawCentredString(cx, y + 40 * mm, TXT["teller_regel_titel"])
         c.setFont(BODY_FONT, 7.8)
         c.setFillColor(HexColor("#666666"))
-        c.drawCentredString(cx, y + 34.2 * mm, TXT["teller_regel_zeile1"])
-        c.drawCentredString(cx, y + 31 * mm, TXT["teller_regel_zeile2"])
+        c.drawCentredString(cx, y + 35.6 * mm, TXT["teller_regel_zeile1"])
+        c.drawCentredString(cx, y + 32.2 * mm, TXT["teller_regel_zeile2"])
     else:
         n = len(ingredients)
         rows = -(-n // 4)
-        cell_w = 13 * mm
-        cell_h = min(10 * mm, 40 * mm / rows)
-        thumb = min(9.2 * mm, cell_h - 0.8 * mm)
+        cell_w = 13.2 * mm
+        cell_h = min(11.5 * mm, 45.5 * mm / rows)
+        thumb = min(10.4 * mm, cell_h - 1.1 * mm)
         gx0 = x + (CW - 4 * cell_w) / 2
-        gy0 = y + 67.8 * mm
+        gy0 = y + 73.5 * mm
         for k, z in enumerate(ingredients):
             col, row = k % 4, k // 4
             tcx = gx0 + col * cell_w + cell_w / 2
             tcy = gy0 - row * cell_h - cell_h / 2
             mini_card(c, z, tcx, tcy, thumb)
-            badge(c, tcx + thumb / 2 - 0.5 * mm, tcy + thumb / 2 - 0.5 * mm, k in mo["table"])
+            badge(c, tcx + thumb / 2 - 0.5 * mm, tcy + thumb / 2 - 0.5 * mm, k in mo["table"],
+                  r=2.2 * mm * thumb / (9.2 * mm))
     sx, sw = x + BAND + 3.5 * mm, CW - 2 * BAND - 9 * mm
     yy = saying(c, sx, y + 24.2 * mm, mo["mampf"], OK_COL, sw)
     saying(c, sx, yy - 0.8 * mm, mo["baeh"], NO_COL, sw)
@@ -526,6 +570,24 @@ for t in MARKER:
         fail(f"Marker {t['titel']}: Icon nicht gefunden.")
 used = [m["icon"] for m in monsters] + [z["icon"] for z in ingredients] + [t["icon"] for t in MARKER] + [BR["icon"], cfg["teller"]["icon"]]
 authors = sorted({author_of(u) for u in used})
+
+
+def variant_monsters(v):
+    if not v.get("positionen"):
+        return monsters
+    out = []
+    for lv in sorted(STUFEN):
+        group = [m for m in monsters if m["level"] == lv]
+        for p in v["positionen"]:
+            if 1 <= p <= len(group):
+                out.append(group[p - 1])
+            else:
+                print(f"Hinweis: {v['name']}: Stufe {lv} hat kein Monster Nr. {p}.")
+    return out
+
+
+VARIANTS = cfg.get("monster_varianten") or [{"name": ""}]
+PICK = next((v for v in VARIANTS if v.get("positionen")), None)
 PH = {
     "titel": cfg["spiel"]["titel"],
     "untertitel": cfg["spiel"]["untertitel"],
@@ -533,7 +595,14 @@ PH = {
     "anzahl_monster": len(monsters),
     "stufenfarben": ", ".join(f"{STUFEN[k]['name']} = {k}" for k in sorted(STUFEN)),
     "urheber": ", ".join(authors),
+    "autor": AUTOR.get("name", ""),
+    "autor_web": AUTOR.get("web", ""),
+    "lizenz": AUTOR.get("lizenz", ""),
+    "lizenz_url": AUTOR.get("lizenz_url", ""),
 }
+if PICK:
+    PH["anzahl_auswahl"] = len(variant_monsters(PICK))
+    PH["auswahl_je_stufe"] = len(PICK["positionen"])
 for t in MARKER:
     PH[t["schluessel"]] = t["im_spiel"]
     PH[t["schluessel"] + "_reserve"] = t["reserve"]
@@ -546,7 +615,7 @@ def fill(s):
 
 def parse_anleitung(p):
     """# Abschnitt, ## Kasten, - Aufzählung, Leerzeile = neuer Absatz,
-    [material] / [beispiel] = Abbildung an dieser Stelle."""
+    [material] / [beispiel] = Abbildung an dieser Stelle, [autor] Text = Absatz mit Logo davor."""
     blocks, cur = [], None
     for line in open(p, encoding="utf-8").read().splitlines():
         s = line.strip()
@@ -559,6 +628,8 @@ def parse_anleitung(p):
             cur["items"].append(("break", ""))
         elif s in ("[material]", "[beispiel]"):
             cur["items"].append((s[1:-1], ""))
+        elif s.startswith("[autor]"):
+            cur["items"].append(("autor", fill(s[7:].strip())))
         elif s.startswith("- "):
             cur["items"].append(("li", fill(s[2:].strip())))
         elif cur["items"] and cur["items"][-1][0] == "p":
@@ -689,6 +760,27 @@ class PlateFig(Flowable):
             badge(c, cx + s / 2 - 0.5 * mm, h / 2 + s / 2 - 0.5 * mm, k in EX_MON["table"], r=s * 0.14)
 
 
+class LogoPara(Flowable):
+    """Absatz mit dem Autor-Logo links daneben."""
+
+    def __init__(self, para, h):
+        super().__init__()
+        self.para, self.lh = para, h
+
+    def wrap(self, aw, ah):
+        img = logo()
+        self.lw = self.lh * img.getSize()[0] / img.getSize()[1] if img else 0
+        self.gap = 2.5 * mm if img else 0
+        self.ph = self.para.wrap(aw - self.lw - self.gap, ah)[1]
+        self.top = 0.12 * self.lh
+        self.h = max(self.lh + self.top if img else 0, self.ph)
+        return aw, self.h
+
+    def draw(self):
+        draw_logo(self.canv, 0, self.h - self.top - self.lh, self.lh)
+        self.para.drawOn(self.canv, self.lw + self.gap, self.h - self.ph)
+
+
 class Keep:
     """Abschnitt, der möglichst nicht auf zwei Rahmen verteilt wird."""
 
@@ -737,6 +829,8 @@ def rule_story(width, sc, keep=False):
         for kind, text in b["items"]:
             if kind in ("material", "beispiel"):
                 flow_ += figure(kind)
+            elif kind == "autor":
+                flow_ += [LogoPara(para(text, body), 11 * mm * sc), Spacer(1, 1.6 * mm * sc)]
             else:
                 st = intro if bi == 0 and kind == "p" else (bullet if kind == "li" else body)
                 flow_ += [para(text, st, kind == "li"), Spacer(1, 1.6 * mm * sc)]
@@ -902,7 +996,16 @@ def cover_card(c, x, y):
     for ln in simpleSplit(cfg["spiel"]["untertitel"], BODY_FONT, 8.5, CW - 14 * mm):
         c.drawCentredString(cx, yy, ln)
         yy -= 3.8 * mm
-    brains(c, 4, cx, y + 8 * mm, size=5 * mm, gap=1.2 * mm)
+    if CREDIT:
+        lh, gap = 6 * mm, 1.8 * mm
+        img = logo(white=True)
+        lw = lh * img.getSize()[0] / img.getSize()[1] if img else 0
+        tw = stringWidth(CREDIT, BODY_FONT, 7.5)
+        x0 = cx - (lw + (gap if lw else 0) + tw) / 2
+        draw_logo(c, x0, y + 7 * mm, lh, white=True)
+        c.setFillColor(white)
+        c.setFont(BODY_FONT, 7.5)
+        c.drawString(x0 + lw + (gap if lw else 0), y + 9.2 * mm, CREDIT)
 
 
 def card_sizes():
@@ -943,21 +1046,7 @@ for p in range(0, len(ingredients), PER_PAGE):
     cv.showPage()
 
 # Monster: Vorder- und Rückseiten im Wechsel (Rückseiten gespiegelt für Duplex, lange Kante)
-def variant_monsters(v):
-    if not v.get("positionen"):
-        return monsters
-    out = []
-    for lv in sorted(STUFEN):
-        group = [m for m in monsters if m["level"] == lv]
-        for p in v["positionen"]:
-            if 1 <= p <= len(group):
-                out.append(group[p - 1])
-            else:
-                print(f"Hinweis: {v['name']}: Stufe {lv} hat kein Monster Nr. {p}.")
-    return out
-
-
-for v in cfg.get("monster_varianten") or [{"name": ""}]:
+for v in VARIANTS:
     sel = variant_monsters(v)
     prefix = v["name"] + ": " if v["name"] else ""
     pages = [sel[i:i + PER_PAGE] for i in range(0, len(sel), PER_PAGE)]
@@ -1038,6 +1127,7 @@ for i, (nm, rel) in enumerate(rows):
     cv.setFont("Helvetica", 7.3)
     cv.setFillColor(HexColor(INK))
     cv.drawString(x, yy, f"{nm}: {icon_title(rel)} - Icons made by {author_of(rel)}")
+footer(cv, "")
 cv.showPage()
 cv.save()
 print(f"Fertig: {OUT}  ({len(ingredients)} Zutaten, {len(monsters)} Monster)")

@@ -13,11 +13,12 @@ import argparse, copy, csv, itertools, os, re, sys
 try:
     import yaml
     from reportlab.pdfgen import canvas
-    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.pagesizes import A4, landscape
     from reportlab.lib.units import mm
     from reportlab.lib.utils import simpleSplit
     from reportlab.lib.colors import HexColor, white, black
-    from reportlab.pdfbase.pdfmetrics import stringWidth
+    from reportlab.pdfbase.pdfmetrics import stringWidth, registerFont
+    from reportlab.pdfbase.ttfonts import TTFont
     from svglib.svglib import svg2rlg
     from reportlab.graphics import renderPDF
 except ImportError as e:
@@ -49,6 +50,20 @@ OUT = path(cfg["dateien"]["ausgabe"])
 CACHE = path(cfg["dateien"].get("cache_ordner", ".cache"))
 os.makedirs(CACHE, exist_ok=True)
 os.makedirs(os.path.dirname(OUT) or ".", exist_ok=True)
+
+def load_font(key, name, default):
+    if not cfg["dateien"].get(key):
+        return default
+    fp = path(cfg["dateien"][key])
+    if not os.path.exists(fp):
+        fail(f"{key} nicht gefunden: {fp}")
+    registerFont(TTFont(name, fp))
+    return name
+
+
+TITLE_FONT = load_font("titelschrift", "Titel", "Helvetica-Bold")
+BODY_FONT = load_font("textschrift", "Text", "Helvetica")
+QUOTE_FONT = load_font("spruchschrift", "Spruch", "Helvetica-Oblique")
 
 LAY = cfg["layout"]
 W, H = A4
@@ -331,7 +346,7 @@ def footer(c, text):
     c.drawString(8 * mm, 4.5 * mm, text)
 
 
-def wrapped(c, text, x, y, width, font="Helvetica", size=10, lead=13, color="#222222"):
+def wrapped(c, text, x, y, width, font=BODY_FONT, size=10, lead=13, color="#222222"):
     c.setFont(font, size)
     c.setFillColor(HexColor(color))
     for line in simpleSplit(text, font, size, width):
@@ -340,7 +355,7 @@ def wrapped(c, text, x, y, width, font="Helvetica", size=10, lead=13, color="#22
     return y
 
 
-def fit_text(c, text, cx, y, maxw, font="Helvetica-Bold", size=13):
+def fit_text(c, text, cx, y, maxw, font=TITLE_FONT, size=13):
     while stringWidth(text, font, size) > maxw and size > 6.5:
         size -= 0.5
     c.setFont(font, size)
@@ -361,7 +376,7 @@ def ingredient_card(c, z, x, y):
         pts, size = [(cx, cy + 12 * mm), (cx - 13.5 * mm, cy - 11.5 * mm), (cx + 13.5 * mm, cy - 11.5 * mm)], 25 * mm
     for (px, py) in pts:
         icon(c, z["icon"], col, px - size / 2, py - size / 2, size)
-    c.setFont("Helvetica", 9)
+    c.setFont(BODY_FONT, 10)
     c.setFillColor(HexColor("#555555"))
     c.drawCentredString(x + CW / 2, y + 8 * mm,
                         TXT["zutat_zeile"].format(gruppe=z["gruppe"], farbe=display(z["farbe"]), anzahl=z["anzahl"]))
@@ -384,10 +399,10 @@ def monster_front(c, mo, x, y):
     icon(c, mo["icon"], mo["color"], cx - size / 2, cy - size / 2, size)
     c.setFillColor(HexColor(INK))
     fit_text(c, mo["name"], cx, y + 34 * mm, CW - 2 * BAND - 4 * mm, size=13)
-    c.setFont("Helvetica-Oblique", 8.5)
+    c.setFont(QUOTE_FONT, 9.2)
     c.setFillColor(HexColor("#444444"))
     yy = y + 28 * mm
-    for ln in simpleSplit("„" + mo["spruch"] + "“", "Helvetica-Oblique", 8.5, CW - 2 * BAND - 6 * mm):
+    for ln in simpleSplit("„" + mo["spruch"] + "“", QUOTE_FONT, 9.2, CW - 2 * BAND - 6 * mm):
         c.drawCentredString(cx, yy, ln)
         yy -= 3.9 * mm
     brains(c, mo["level"], cx, y + 8 * mm)
@@ -411,12 +426,12 @@ def mini_card(c, z, cx, cy, size):
         icon(c, z["icon"], col, cx + dx - sz / 2, cy + dy - sz / 2, sz)
 
 
-def saying(c, x, y, text, color, width, size=7.2, lead=3.0 * mm):
+def saying(c, x, y, text, color, width, size=7.8, lead=3.0 * mm):
     c.setFillColor(HexColor(color))
     c.circle(x, y + 0.9 * mm, 1.0 * mm, fill=1, stroke=0)
-    c.setFont("Helvetica-Oblique", size)
+    c.setFont(QUOTE_FONT, size)
     c.setFillColor(HexColor("#333333"))
-    for ln in simpleSplit(text, "Helvetica-Oblique", size, width):
+    for ln in simpleSplit(text, QUOTE_FONT, size, width):
         c.drawString(x + 2.6 * mm, y, ln)
         y -= lead
     return y
@@ -426,14 +441,14 @@ def monster_back(c, mo, x, y):
     level_border(c, x, y, mo["level"])
     cx = x + CW / 2
     c.setFillColor(HexColor(INK))
-    fit_text(c, mo["name"], cx, y + 77.5 * mm, CW - 2 * BAND - 4 * mm, size=10)
+    fit_text(c, mo["name"], cx, y + 77.5 * mm, CW - 2 * BAND - 4 * mm, size=13)
     brains(c, mo["level"], cx, y + 69.6 * mm, size=4.8 * mm, gap=1 * mm)
     if mo["plate"]:
         icon(c, TXT["teller_regel_icon"], "#777777", cx - 8.5 * mm, y + 44 * mm, 17 * mm)
-        c.setFont("Helvetica-Bold", 9.5)
+        c.setFont(TITLE_FONT, 9.5)
         c.setFillColor(HexColor("#444444"))
         c.drawCentredString(cx, y + 38 * mm, TXT["teller_regel_titel"])
-        c.setFont("Helvetica", 7)
+        c.setFont(BODY_FONT, 7.8)
         c.setFillColor(HexColor("#666666"))
         c.drawCentredString(cx, y + 34.2 * mm, TXT["teller_regel_zeile1"])
         c.drawCentredString(cx, y + 31 * mm, TXT["teller_regel_zeile2"])
@@ -470,13 +485,13 @@ def monster_back(c, mo, x, y):
     c.setLineWidth(0.5)
     c.line(x + BAND + 4 * mm, y + 13.4 * mm, x + CW - BAND - 4 * mm, y + 13.4 * mm)
     c.setFillColor(HexColor(RULE_COL))
-    size = 7.8
+    size = 8.6
     text = mo["regeltext"] or mo["regel"]
-    lines = simpleSplit(text, "Helvetica-Bold", size, CW - 2 * BAND - 6 * mm)
+    lines = simpleSplit(text, BODY_FONT, size, CW - 2 * BAND - 6 * mm)
     while len(lines) > 2 and size > 6.5:
         size -= 0.5
-        lines = simpleSplit(text, "Helvetica-Bold", size, CW - 2 * BAND - 6 * mm)
-    c.setFont("Helvetica-Bold", size)
+        lines = simpleSplit(text, BODY_FONT, size, CW - 2 * BAND - 6 * mm)
+    c.setFont(BODY_FONT, size)
     yy = y + 9.4 * mm
     for ln in lines:
         c.drawCentredString(cx, yy, ln)
@@ -490,7 +505,7 @@ def token_card(c, t, x, y):
     size = 38 * mm
     icon(c, t["icon"], t["farbe"], cx - size / 2, y + CH / 2 - size / 2 - 2 * mm, size)
     c.setFillColor(HexColor("#555555"))
-    fit_text(c, t["untertitel"], cx, y + 12 * mm, CW - 10 * mm, font="Helvetica", size=9)
+    fit_text(c, t["untertitel"], cx, y + 12 * mm, CW - 10 * mm, font=BODY_FONT, size=10)
 
 
 # ------------------------------------------------------------------ Platzhalter für Anleitung
@@ -507,7 +522,7 @@ MARKER = cfg["marker"]
 for t in MARKER:
     if not os.path.exists(os.path.join(ICON_DIR, t["icon"])):
         fail(f"Marker {t['titel']}: Icon nicht gefunden.")
-used = [m["icon"] for m in monsters] + [z["icon"] for z in ingredients] + [t["icon"] for t in MARKER] + [BR["icon"]]
+used = [m["icon"] for m in monsters] + [z["icon"] for z in ingredients] + [t["icon"] for t in MARKER] + [BR["icon"], cfg["teller"]["icon"]]
 authors = sorted({author_of(u) for u in used})
 PH = {
     "titel": cfg["spiel"]["titel"],
@@ -546,7 +561,7 @@ def parse_anleitung(p):
 cv = canvas.Canvas(OUT, pagesize=A4)
 cv.setTitle(cfg["spiel"]["titel"])
 M_ = 18 * mm
-S, L = 9.6, 12.4
+S, L = 10.5, 13
 state = {"y": 0}
 
 
@@ -556,22 +571,22 @@ def new_rules_page(first=False):
         cv.showPage()
     state["y"] = H - 18 * mm
     if first:
-        cv.setFont("Helvetica-Bold", 22)
+        cv.setFont(TITLE_FONT, 26)
         cv.setFillColor(HexColor(INK))
         cv.drawString(M_, state["y"], cfg["spiel"]["titel"])
         state["y"] -= 6.5 * mm
-        cv.setFont("Helvetica", 10)
+        cv.setFont(BODY_FONT, 11)
         cv.setFillColor(HexColor("#555555"))
         cv.drawString(M_, state["y"], cfg["spiel"]["untertitel"])
         state["y"] -= 9 * mm
 
 
 def block(head, body, bullets):
-    n = len(simpleSplit(body, "Helvetica", S, W - 2 * M_)) + sum(
-        len(simpleSplit(b, "Helvetica", S, W - 2 * M_ - 8 * mm)) for b in bullets)
+    n = len(simpleSplit(body, BODY_FONT, S, W - 2 * M_)) + sum(
+        len(simpleSplit(b, BODY_FONT, S, W - 2 * M_ - 8 * mm)) for b in bullets)
     if state["y"] - (n + 2) * L - 8 * mm < 20 * mm:
         new_rules_page()
-    cv.setFont("Helvetica-Bold", 11.5)
+    cv.setFont(TITLE_FONT, 12.5)
     cv.setFillColor(HexColor(RULE_COL))
     cv.drawString(M_, state["y"], head)
     state["y"] -= 5 * mm
@@ -629,8 +644,35 @@ for p in range(0, len(tokens), PER_PAGE):
     footer(cv, TXT["fuss_marker"].format(seite=p // PER_PAGE + 1))
     cv.showPage()
 
+# Teller (quer): Innenfläche groß genug für 3 Karten nebeneinander
+TL = cfg["teller"]
+PW, PH_ = landscape(A4)
+cv.setPageSize((PW, PH_))
+tcx, tcy = PW / 2, PH_ / 2 + 1 * mm
+cv.setLineWidth(1.2)
+cv.setStrokeColor(HexColor(TL["linie"]))
+cv.setFillColor(HexColor(TL["rand"]))
+cv.ellipse(tcx - 141 * mm, tcy - 98 * mm, tcx + 141 * mm, tcy + 98 * mm, fill=1, stroke=1)
+cv.setLineWidth(0.6)
+cv.ellipse(tcx - 136 * mm, tcy - 93 * mm, tcx + 136 * mm, tcy + 93 * mm, fill=0, stroke=1)
+cv.setFillColor(HexColor(TL["mulde"]))
+cv.setLineWidth(1.0)
+cv.ellipse(tcx - 121 * mm, tcy - 81 * mm, tcx + 121 * mm, tcy + 81 * mm, fill=1, stroke=1)
+icon(cv, TL["icon"], TL["linie"], tcx - 4.5 * mm, tcy + 82.5 * mm, 9 * mm)
+cv.setFont(BODY_FONT, 10)
+cv.setFillColor(HexColor(TL["schrift"]))
+for x, ang, txt in ((tcx - 130 * mm, 90, TXT["teller_links"]), (tcx + 130 * mm, -90, TXT["teller_rechts"])):
+    cv.saveState()
+    cv.translate(x, tcy)
+    cv.rotate(ang)
+    cv.drawCentredString(0, -1.2 * mm, txt)
+    cv.restoreState()
+footer(cv, TXT["fuss_teller"])
+cv.showPage()
+cv.setPageSize(A4)
+
 # Bildnachweis
-cv.setFont("Helvetica-Bold", 14)
+cv.setFont(TITLE_FONT, 14)
 cv.setFillColor(HexColor(INK))
 cv.drawString(15 * mm, H - 16 * mm, TXT["nachweis_titel"])
 cv.setFont("Helvetica", 8)
@@ -640,12 +682,12 @@ for k, line in enumerate(TXT["nachweis_hinweis"]):
 rows = [(m["name"], m["icon"]) for m in sorted(monsters, key=lambda m: m["name"].lower())]
 rows += [("Zutat " + z["name"], z["icon"]) for z in ingredients]
 rows += [("Karte " + t["titel"], t["icon"]) for t in MARKER]
-rows += [("Schwierigkeit", BR["icon"])]
+rows += [("Schwierigkeit", BR["icon"]), ("Teller", TL["icon"])]
 per_col = 56
 for i, (nm, rel) in enumerate(rows):
     col, row = i // per_col, i % per_col
     x = 15 * mm + col * 92 * mm
-    yy = H - 31 * mm - row * 4.55 * mm
+    yy = H - (23 + 4 * len(TXT["nachweis_hinweis"])) * mm - row * 4.55 * mm
     if yy < 8 * mm:
         print("Hinweis: Bildnachweis passt nicht komplett auf die Seite.")
         break

@@ -49,13 +49,26 @@ farben:
   zutaten:
     rot:   "#D7263D"
     blau:  "#1B6CA8"
-    gelb:  "#F2B705"
+    gelb:  "#CC9A06"           # Senfgelb (auch in schwachen Ausdrucken gut sichtbar)
     gruen: "#2E9E4F"
+  # Formsymbol je Zutatenfarbe (für Farbenblinde): kreis, quadrat, dreieck, kreuz, raute
+  farbsymbole:
+    rot:   kreis
+    blau:  quadrat
+    gelb:  dreieck
+    gruen: kreuz
   # Beschriftung auf den Karten (falls abweichend vom Namen):
   anzeigenamen:
     gruen: "grün"
   # Monsterfarben, die der Reihe nach vergeben werden, wenn monster.csv keine Farbe angibt:
   monsterfarben: ["#8E3B7D", "#12858A", "#5B3A8C", "#8A5A2B", "#4A5568", "#D6478F", "#E8710A"]
+
+# Symbol je Essensgruppe (Plakette unten auf der Zutatenkarte). Namen müssen zu zutaten.csv passen.
+gruppen:
+  Gemüse:     gruppen/delapouite/carrot.svg
+  Süßes:      gruppen/lorc/wrapped-sweet.svg
+  Herzhaftes: gruppen/lorc/meat.svg
+  Medizin:    gruppen/delapouite/first-aid-kit.svg
 
 # Schwierigkeitsstufen: Randfarbe, Name, Anzahl Gehirne = Stufennummer
 stufen:
@@ -109,7 +122,6 @@ urheber:
 
 # Beschriftungen auf den Karten und in den Fußzeilen
 texte:
-  zutat_zeile: "{gruppe} · {farbe} · {anzahl}x"
   teller_regel_icon: marker/delapouite/meal.svg
   teller_regel_titel: "Teller-Regel"
   teller_regel_zeile1: "Gilt für alle Zutatenkarten, die auf dem"
@@ -129,5 +141,5 @@ texte:
   teller_rechts: "ganz rechts · zuletzt gelegt"
   nachweis_titel: "Bildnachweis (game-icons.net, CC BY 3.0)"
   nachweis_hinweis:
-    - "Alle Icons wurden nur umgefärbt. Icons made by <Urheber>."
+    - "Alle Icons wurden nur umgefärbt. Icons made by <Urheber in Klammern>."
     - "Lizenz: https://creativecommons.org/licenses/by/3.0/"

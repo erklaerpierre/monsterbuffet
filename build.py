@@ -95,6 +95,12 @@ OK_COL = cfg["farben"].get("mampf", "#2E9E4F")
 NO_COL = cfg["farben"].get("baeh", "#D7263D")
 
 
+SYMBOLS = cfg["farben"].get("farbsymbole", {})  # Farbname -> Formsymbol
+GROUPS = cfg.get("gruppen", {})                  # Gruppe -> Icon
+ACC = cfg["farben"].get("anleitung", "#4B2E6B")
+BOX = cfg["farben"].get("kasten", "#F2EDF7")
+
+
 def display(color):
     return DISPLAY.get(color, color)
 
@@ -121,6 +127,8 @@ for z in ingredients:
         fail(f"Zutat {z['name']}: Anzahl muss 1, 2 oder 3 sein.")
     if not os.path.exists(os.path.join(ICON_DIR, z["icon"])):
         fail(f"Zutat {z['name']}: Icon nicht gefunden: {os.path.join(ICON_DIR, z['icon'])}")
+    if z["gruppe"] in GROUPS and not os.path.exists(os.path.join(ICON_DIR, GROUPS[z["gruppe"]])):
+        fail(f"Gruppe {z['gruppe']}: Icon nicht gefunden: {os.path.join(ICON_DIR, GROUPS[z['gruppe']])}")
 
 # ------------------------------------------------------------------ Regelsprache
 # Wörter: Gruppen, Farben und Anzahlen (1/2/3) aus zutaten.csv, plus  links, rechts, groesse:N
@@ -310,6 +318,9 @@ def mix_white(hexcol, t=0.86):
     return "#%02X%02X%02X" % tuple(int(v + (255 - v) * t) for v in (r, g, b))
 
 
+BACK_TINT = mix_white(ACC, 0.9)  # Rückseiten und Rand von Zutaten-/Markerkarten
+
+
 BR = cfg["gehirn"]
 
 
@@ -377,7 +388,7 @@ def draw_logo(c, x, y, h, white=False):
 
 
 def footer(c, text):
-    c.setFont("Helvetica", 7)
+    c.setFont(BODY_FONT, 7.5)
     c.setFillColor(HexColor("#999999"))
     c.drawString(8 * mm, 4.5 * mm, text)
     if CREDIT:
@@ -391,24 +402,81 @@ def fit_text(c, text, cx, y, maxw, font=TITLE_FONT, size=13):
     c.drawCentredString(cx, y, text)
 
 
+def color_symbol(c, color_name, cx, cy, r, outline=None):
+    """Formsymbol der Zutatenfarbe (für Farbenblinde), r = halbe Breite."""
+    kind = SYMBOLS.get(color_name)
+    if not kind:
+        return
+    c.saveState()
+    c.setFillColor(HexColor(COLORS[color_name]))
+    c.setStrokeColor(outline or white)
+    c.setLineWidth(r * 0.35 if outline else 0)
+    stroke = 1 if outline else 0
+    if kind == "kreis":
+        c.circle(cx, cy, r, fill=1, stroke=stroke)
+    elif kind == "quadrat":
+        c.rect(cx - r * 0.88, cy - r * 0.88, r * 1.76, r * 1.76, fill=1, stroke=stroke)
+    else:
+        a, b = 1.05, 0.36
+        pts = {"dreieck": [(0, 1.05), (-1.05, -0.8), (1.05, -0.8)],
+               "raute": [(0, 1.1), (1.1, 0), (0, -1.1), (-1.1, 0)],
+               "kreuz": [(-b, a), (b, a), (b, b), (a, b), (a, -b), (b, -b), (b, -a), (-b, -a),
+                         (-b, -b), (-a, -b), (-a, b), (-b, b)]}.get(kind)
+        if pts:
+            p = c.beginPath()
+            p.moveTo(cx + pts[0][0] * r, cy + pts[0][1] * r)
+            for px, py in pts[1:]:
+                p.lineTo(cx + px * r, cy + py * r)
+            p.close()
+            c.drawPath(p, fill=1, stroke=stroke)
+    c.restoreState()
+
+
 def ingredient_card(c, z, x, y):
     col = COLORS[z["farbe"]]
+    level_frame(c, x, y, BACK_TINT)
     c.setFillColor(HexColor(INK))
     fit_text(c, z["name"], x + CW / 2, y + CH - 14 * mm, CW - 10 * mm, size=16)
-    cx, cy = x + CW / 2, y + CH / 2 - 2 * mm
+    cx, cy = x + CW / 2, y + 43.5 * mm
     n = z["anzahl"]
     if n == 1:
         pts, size = [(cx, cy)], 36 * mm
     elif n == 2:
-        pts, size = [(cx - 14.5 * mm, cy), (cx + 14.5 * mm, cy)], 26 * mm
+        pts, size = [(cx - 14 * mm, cy), (cx + 14 * mm, cy)], 25.5 * mm
     else:
         pts, size = [(cx, cy + 12 * mm), (cx - 13.5 * mm, cy - 11.5 * mm), (cx + 13.5 * mm, cy - 11.5 * mm)], 25 * mm
     for (px, py) in pts:
         icon(c, z["icon"], col, px - size / 2, py - size / 2, size)
-    c.setFont(BODY_FONT, 10)
-    c.setFillColor(HexColor("#555555"))
-    c.drawCentredString(x + CW / 2, y + 8 * mm,
-                        TXT["zutat_zeile"].format(gruppe=z["gruppe"], farbe=display(z["farbe"]), anzahl=z["anzahl"]))
+    # Plakette: Gruppe links, Farbsymbol + Farbe + Anzahl rechts
+    px0, pw, ph = x + BAND + 2.5 * mm, CW - 2 * BAND - 5 * mm, 9.5 * mm
+    py0 = y + BAND + 2.5 * mm
+    c.setFillColor(HexColor(mix_white(col, 0.84)))
+    c.roundRect(px0, py0, pw, ph, 2 * mm, fill=1, stroke=0)
+    mid = py0 + ph / 2
+    gi = GROUPS.get(z["gruppe"])
+    isz = 6.2 * mm
+    tx = px0 + 2 * mm
+    if gi:
+        icon(c, gi, "#333333", tx, mid - isz / 2, isz)
+        tx += isz + 1.5 * mm
+    right = f"{display(z['farbe'])} · {n}"
+    sym_r = 1.9 * mm
+    room = px0 + pw - 2 * mm - tx - 2 * sym_r - 1.6 * mm - 3 * mm
+    size = 11
+
+    def times_w(s):  # Malzeichen größer gesetzt, sonst ist es in Creepster winzig
+        return stringWidth("×", TITLE_FONT, s * 1.8)
+
+    while stringWidth(z["gruppe"] + right, TITLE_FONT, size) + times_w(size) > room and size > 6:
+        size -= 0.5
+    rx = px0 + pw - 2 * mm - stringWidth(right, TITLE_FONT, size) - times_w(size)
+    c.setFillColor(HexColor(INK))
+    c.setFont(TITLE_FONT, size)
+    c.drawString(tx, mid - size * 0.32, z["gruppe"])
+    c.drawString(rx, mid - size * 0.32, right)
+    c.setFont(TITLE_FONT, size * 1.8)
+    c.drawString(rx + stringWidth(right, TITLE_FONT, size), mid - size * 0.6, "×")
+    color_symbol(c, z["farbe"], rx - 1.6 * mm - sym_r, mid, sym_r)
 
 
 def level_frame(c, x, y, color):
@@ -457,6 +525,7 @@ def mini_card(c, z, cx, cy, size):
         pts, sz = [(0, 2.5 * u), (-2.7 * u, -2.1 * u), (2.7 * u, -2.1 * u)], 4.7 * u
     for dx, dy in pts:
         icon(c, z["icon"], col, cx + dx - sz / 2, cy + dy - sz / 2, sz)
+    color_symbol(c, z["farbe"], cx - size / 2 + 1.3 * u, cy - size / 2 + 1.3 * u, 0.85 * u, outline=white)
 
 
 def badge(c, bx, by, ok, r=2.2 * mm):
@@ -545,6 +614,7 @@ def monster_back(c, mo, x, y):
 
 
 def token_card(c, t, x, y):
+    level_frame(c, x, y, BACK_TINT)
     cx = x + CW / 2
     c.setFillColor(HexColor(INK))
     fit_text(c, t["titel"], cx, y + CH - 16 * mm, CW - 10 * mm, size=18)
@@ -568,7 +638,7 @@ MARKER = cfg["marker"]
 for t in MARKER:
     if not os.path.exists(os.path.join(ICON_DIR, t["icon"])):
         fail(f"Marker {t['titel']}: Icon nicht gefunden.")
-used = [m["icon"] for m in monsters] + [z["icon"] for z in ingredients] + [t["icon"] for t in MARKER] + [BR["icon"], cfg["teller"]["icon"]] + [b["icon"] for b in cfg["rueckseiten"].values()]
+used = [m["icon"] for m in monsters] + [z["icon"] for z in ingredients] + [t["icon"] for t in MARKER] + [BR["icon"], cfg["teller"]["icon"]] + [b["icon"] for b in cfg["rueckseiten"].values()] + list(GROUPS.values())
 authors = sorted({author_of(u) for u in used})
 
 
@@ -595,6 +665,7 @@ PH = {
     "anzahl_monster": len(monsters),
     "stufenfarben": ", ".join(f"{STUFEN[k]['name']} = {k}" for k in sorted(STUFEN)),
     "urheber": ", ".join(authors),
+    "farbsymbole": ", ".join(f"{display(f)} = {s.capitalize()}" for f, s in SYMBOLS.items()),
     "autor": AUTOR.get("name", ""),
     "autor_web": AUTOR.get("web", ""),
     "lizenz": AUTOR.get("lizenz", ""),
@@ -642,9 +713,6 @@ def parse_anleitung(p):
 
 
 # ------------------------------------------------------------------ Anleitung: Satz
-ACC = cfg["farben"].get("anleitung", "#4B2E6B")
-BOX = cfg["farben"].get("kasten", "#F2EDF7")
-
 
 class Band(Flowable):
     """Überschrift auf farbigem Band."""
@@ -1044,7 +1112,7 @@ def mirrored_pos(i):
 def card_back(c, x, y, kind):
     """Gemeinsame, dezente Rückseite für Zutaten- und Markerkarten."""
     b = cfg["rueckseiten"][kind]
-    c.setFillColor(HexColor(mix_white(ACC, 0.9)))
+    c.setFillColor(HexColor(BACK_TINT))
     c.rect(x - BLEED, y - BLEED, CW + 2 * BLEED, CH + 2 * BLEED, fill=1, stroke=0)
     c.setStrokeColor(HexColor(mix_white(ACC, 0.62)))
     c.setLineWidth(0.6)
@@ -1143,7 +1211,7 @@ cv.setPageSize(A4)
 cv.setFont(TITLE_FONT, 14)
 cv.setFillColor(HexColor(INK))
 cv.drawString(15 * mm, H - 16 * mm, TXT["nachweis_titel"])
-cv.setFont("Helvetica", 8)
+cv.setFont(BODY_FONT, 9)
 cv.setFillColor(HexColor("#555555"))
 for k, line in enumerate(TXT["nachweis_hinweis"]):
     cv.drawString(15 * mm, H - (20.5 + 4 * k) * mm, line)
@@ -1152,17 +1220,24 @@ rows += [("Zutat " + z["name"], z["icon"]) for z in ingredients]
 rows += [("Karte " + t["titel"], t["icon"]) for t in MARKER]
 rows += [("Schwierigkeit", BR["icon"]), ("Teller", TL["icon"])]
 rows += [("Rückseite " + b["titel"], b["icon"]) for b in cfg["rueckseiten"].values()]
-per_col = 56
+rows += [("Gruppe " + g, rel) for g, rel in GROUPS.items()]
+n_cols = 3
+per_col = -(-len(rows) // n_cols)
+col_w = (W - 30 * mm) / n_cols
 for i, (nm, rel) in enumerate(rows):
     col, row = i // per_col, i % per_col
-    x = 15 * mm + col * 92 * mm
-    yy = H - (23 + 4 * len(TXT["nachweis_hinweis"])) * mm - row * 4.55 * mm
+    x = 15 * mm + col * col_w
+    yy = H - (23 + 4 * len(TXT["nachweis_hinweis"])) * mm - row * 4.4 * mm
     if yy < 8 * mm:
         print("Hinweis: Bildnachweis passt nicht komplett auf die Seite.")
         break
-    cv.setFont("Helvetica", 7.3)
+    line = f"{nm}: {icon_title(rel)} ({author_of(rel)})"
+    size = 7.6
+    while stringWidth(line, BODY_FONT, size) > col_w - 2 * mm and size > 5.5:
+        size -= 0.2
+    cv.setFont(BODY_FONT, size)
     cv.setFillColor(HexColor(INK))
-    cv.drawString(x, yy, f"{nm}: {icon_title(rel)} - Icons made by {author_of(rel)}")
+    cv.drawString(x, yy, line)
 footer(cv, "")
 cv.showPage()
 cv.save()

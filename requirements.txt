@@ -1,3 +1,4 @@
 reportlab
 svglib
 pyyaml
+pillow
